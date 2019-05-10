@@ -1,9 +1,35 @@
+var jq = jQuery.noConflict();
+  	
+	function setBlockUI(element){
+		setBlockUI();
+	}
+
+	function setBlockUI(){
+		let lang = jq('#language').val();
+		if (lang == undefined) {
+			lang = 'EN';
+		}
+		jq.blockUI({ css: { fontSize: '22px' }, message: blockUIMessageMap[lang]});
+     }	
+
+	function unBlockUI(){
+		jq.unblockUI();	
+	}
+	
 	var langMap = {
 			   'EN' : 'English',
-			   'DK' : 'Danish',
+			   'DA' : 'Danish',
 			   'SV' : 'Swedish',
 			   'NO' : 'Norwegian-Bokmal'
 	}
+
+	var blockUIMessageMap = {
+			   'EN' : 'Please wait...',
+			   'DA' : 'Vent venligst...',
+			   'SV' : 'Vänligen vänta...',
+			   'NO' : 'Vennligst vent...'
+	}	
+	
 	//for setting user lang to datatables
 	function getLanguage(lang) {
 	    return '/espedsg2/resources/localization/'+langMap[lang]+'.json';
