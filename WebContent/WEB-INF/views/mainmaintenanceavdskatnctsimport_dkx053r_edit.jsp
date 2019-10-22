@@ -360,7 +360,7 @@
 							 		<td>
 							 			<table border="0" cellspacing="2" cellpadding="0">
 							 				<tr>
-							 					<td class="text14" align="left" ><span title="tign">Godsnr - Egen ref.&nbsp;</span></td>
+							 					<td class="text14" align="left" ><span title="tign">Godsnr - Egen ref./Angiv.sted&nbsp;</span></td>
 									            <td ><input type="text" class="inputTextMediumBlue" name="tign" id="tign" size="35" maxlength="35" value="${model.record.tign}"></td>
 							 				</tr>
 							 				<tr>

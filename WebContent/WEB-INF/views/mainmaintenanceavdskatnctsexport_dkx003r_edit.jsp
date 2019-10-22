@@ -1120,7 +1120,7 @@
 											</td>
 								            
 								            <td class="text14">
-								            	<input type="text" class="inputTextMediumBlue" name="thdst" id="thdst" size="10" maxlength="15" value="${model.record.thdst}">
+								            	<input type="text" class="inputTextMediumBlue" name="thdst" id="thdst" size="36" maxlength="35" value="${model.record.thdst}">
 								            </td>
 								         </tr>
 								         <tr>
