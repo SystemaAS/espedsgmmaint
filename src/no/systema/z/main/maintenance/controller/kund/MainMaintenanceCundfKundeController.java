@@ -1,6 +1,7 @@
 package no.systema.z.main.maintenance.controller.kund;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -12,6 +13,7 @@ import javax.servlet.http.HttpSession;
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 import org.apache.log4j.Logger;
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Required;
@@ -35,8 +37,12 @@ import no.systema.z.main.maintenance.model.jsonjackson.dbtable.JsonMaintMainCund
 import no.systema.z.main.maintenance.model.jsonjackson.dbtable.JsonMaintMainCundcRecord;
 import no.systema.z.main.maintenance.model.jsonjackson.dbtable.JsonMaintMainCundfContainer;
 import no.systema.z.main.maintenance.model.jsonjackson.dbtable.JsonMaintMainCundfRecord;
+import no.systema.z.main.maintenance.model.jsonjackson.dbtable.JsonMaintMainKundfContainer;
+import no.systema.z.main.maintenance.model.jsonjackson.dbtable.JsonMaintMainKundfRecord;
 import no.systema.z.main.maintenance.service.MaintMainCundcService;
 import no.systema.z.main.maintenance.service.MaintMainCundfService;
+import no.systema.z.main.maintenance.service.MaintMainCustomerL1Service;
+import no.systema.z.main.maintenance.url.store.ExternalUrlDataStore;
 import no.systema.z.main.maintenance.url.store.MaintenanceMainUrlDataStore;
 import no.systema.z.main.maintenance.util.MainMaintenanceConstants;
 import no.systema.z.main.maintenance.util.manager.CodeDropDownMgr;
@@ -122,6 +128,10 @@ public class MainMaintenanceCundfKundeController {
 						
 						action = MainMaintenanceConstants.ACTION_UPDATE;
 						
+						//===========================================
+						//Now update the L1 record (when applicable)
+						//===========================================
+						this.updateL1(model, appUser, request, record);
 						
 					}
 				}
@@ -155,11 +165,26 @@ public class MainMaintenanceCundfKundeController {
 						record = this.fetchRecord(appUser.getUser(), kundeSessionParams.getKundnr(), kundeSessionParams.getFirma());
 						model.put(MainMaintenanceConstants.DOMAIN_RECORD, record);
 						
+						//===========================================
+						//Now update the L1 record (when applicable)
+						//===========================================
+						this.updateL1(model, appUser, request, record);
+						
 					}
 				}
 			} else { // Fetch
 				record = fetchRecord(appUser.getUser(), kundeSessionParams.getKundnr(), kundeSessionParams.getFirma());
 				model.put(MainMaintenanceConstants.DOMAIN_RECORD, record);
+				//L1 -FETCH
+				JsonMaintMainKundfRecord recordL1 = fetchRecordL1(appUser, record.getKundnr());
+				if(!StringUtils.hasValue(recordL1.getKundnr())){
+					//copy the parent record in order to present default values for "create new" L1
+					ModelMapper modelMapper = new ModelMapper();
+					recordL1 = modelMapper.map(record, JsonMaintMainKundfRecord.class);
+					recordL1.setKundnr("");						
+				}
+				model.put(MainMaintenanceConstants.DOMAIN_RECORD_L1, recordL1);
+				//L1 -END FETCH
 				
 				action = MainMaintenanceConstants.ACTION_UPDATE;
 
@@ -200,6 +225,118 @@ public class MainMaintenanceCundfKundeController {
 
 		}
 
+	}
+	/**
+	 * 
+	 * @param model
+	 * @param appUser
+	 * @param request
+	 * @param record
+	 */
+	private void updateL1(Map model, SystemaWebUser appUser, HttpServletRequest request, JsonMaintMainCundfRecord record){
+		
+		if(appUser.getKundeL1()!=null && "V".equals(appUser.getKundeL1())){
+			JsonMaintMainKundfRecord params = this.setL1Params(request);
+			JsonMaintMainKundfRecord savedL1Record = updateRecordL1(appUser, params);
+			
+			if(savedL1Record!=null){
+				JsonMaintMainKundfRecord recordL1 = fetchRecordL1(appUser, savedL1Record.getKundnr());
+				if(!StringUtils.hasValue(recordL1.getKundnr())){
+					//copy the parent record in order to present default values for "create new" L1
+					ModelMapper modelMapper = new ModelMapper();
+					recordL1 = modelMapper.map(record, JsonMaintMainKundfRecord.class);
+					recordL1.setKundnr("");						
+				}
+				model.put(MainMaintenanceConstants.DOMAIN_RECORD_L1, recordL1);
+				
+			}else{
+				//do something
+			}
+		}
+	}
+	
+	/**
+	 * transfer object before update
+	 * 
+	 * @param request
+	 * @return
+	 */
+	private JsonMaintMainKundfRecord setL1Params(HttpServletRequest request){
+		JsonMaintMainKundfRecord record = new JsonMaintMainKundfRecord();
+		record.setKundnr(request.getParameter("kundnrL1"));
+		record.setKnavn(request.getParameter("knavnL1"));
+		
+		return record;
+	}
+	/**
+	 * get from L1 record (KUNDF)
+	 * @param user
+	 * @param kundnr
+	 * @param firma
+	 * @return
+	 */
+	private JsonMaintMainKundfRecord fetchRecordL1(SystemaWebUser appUser, String kundnr){
+		JsonMaintMainKundfRecord record = new JsonMaintMainKundfRecord();
+		
+		final String BASE_URL = ExternalUrlDataStore.L1_BASE_FETCH_SPECIFIC_CUSTOMER_URL;
+		//add URL-parameters
+		StringBuffer urlRequestParams = new StringBuffer();
+		urlRequestParams.append("user=" + appUser.getUser() + "&firma=" + appUser.getCompanyCode() + "&kundnr=" + kundnr);
+		
+		//session.setAttribute(TransportDispConstants.ACTIVE_URL_RPG_TRANSPORT_DISP, BASE_URL + "==>params: " + urlRequestParams.toString()); 
+    	logger.info(Calendar.getInstance().getTime() + " CGI-start timestamp");
+    	logger.info("URL: " + BASE_URL);
+    	logger.info("URL PARAMS: " + urlRequestParams);
+    	String jsonPayload = this.urlCgiProxyService.getJsonContent(BASE_URL, urlRequestParams.toString());
+    	//Debug --> 
+    	logger.debug(jsonDebugger.debugJsonPayloadWithLog4J(jsonPayload));
+    	logger.info(Calendar.getInstance().getTime() +  " CGI-end timestamp");
+    	if(jsonPayload!=null){
+    		JsonMaintMainKundfContainer container = this.maintMainCustomerL1Service.getContainer(jsonPayload);
+    		if(container!=null){
+    			for( JsonMaintMainKundfRecord customerRecord: container.getList()){
+	    				record = customerRecord;
+		    	}
+    			
+    		}
+    	}		
+		return record;
+	}
+	/**
+	 * 
+	 * @param user
+	 * @param recordL1ToValidate
+	 * @return
+	 */
+	private JsonMaintMainKundfRecord updateRecordL1(SystemaWebUser appUser, JsonMaintMainKundfRecord recordL1){
+		JsonMaintMainKundfRecord record = new JsonMaintMainKundfRecord();
+		
+		final String BASE_URL = ExternalUrlDataStore.L1_BASE_UPDATE_SPECIFIC_CUSTOMER_URL;
+		//add URL-parameters
+		StringBuffer urlRequestParamsKeys = new StringBuffer();
+		urlRequestParamsKeys.append("user=" + appUser.getUser());
+		String urlRequestParams = this.urlRequestParameterMapper.getUrlParameterValidString((recordL1));
+		//put the final valid param. string
+		urlRequestParams = urlRequestParamsKeys + urlRequestParams;
+		
+		//session.setAttribute(TransportDispConstants.ACTIVE_URL_RPG_TRANSPORT_DISP, BASE_URL + "==>params: " + urlRequestParams.toString()); 
+    	logger.info(Calendar.getInstance().getTime() + " CGI-start timestamp");
+    	logger.info("URL: " + BASE_URL);
+    	logger.info("URL PARAMS: " + urlRequestParams);
+    	String jsonPayload = this.urlCgiProxyService.getJsonContent(BASE_URL, urlRequestParams.toString());
+    	//Debug --> 
+    	logger.debug(jsonDebugger.debugJsonPayloadWithLog4J(jsonPayload));
+    	logger.info(Calendar.getInstance().getTime() +  " CGI-end timestamp");
+    	if(jsonPayload!=null){
+    		JsonMaintMainKundfContainer container = this.maintMainCustomerL1Service.getContainer(jsonPayload);
+    		if(container!=null){
+    			for( JsonMaintMainKundfRecord customerRecord: container.getList()){
+	    				record = customerRecord;
+		    	}
+    			
+    		}
+    	}		
+		return record;
 	}
 	
 	/**
@@ -497,6 +634,12 @@ public class MainMaintenanceCundfKundeController {
 	public void setMaintMainCundcService (MaintMainCundcService value){ this.maintMainCundcService = value; }
 	public MaintMainCundcService getMaintMainCundcService(){ return this.maintMainCundcService; }
 	
+	@Qualifier ("maintMainCustomerL1Service")
+	private MaintMainCustomerL1Service maintMainCustomerL1Service;
+	@Autowired
+	@Required
+	public void setMaintMainCutomerL1Service (MaintMainCustomerL1Service value){ this.maintMainCustomerL1Service = value; }
+	public MaintMainCustomerL1Service getMaintMainCutomerL1Service(){ return this.maintMainCustomerL1Service; }		
 	
 	
 	

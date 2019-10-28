@@ -14,6 +14,7 @@ import javax.servlet.http.HttpSession;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Required;
@@ -65,13 +66,17 @@ import no.systema.z.main.maintenance.model.jsonjackson.dbtable.JsonMaintMainKodt
 import no.systema.z.main.maintenance.model.jsonjackson.dbtable.JsonMaintMainKodtlikRecord;
 import no.systema.z.main.maintenance.model.jsonjackson.dbtable.JsonMaintMainKodtotyContainer;
 import no.systema.z.main.maintenance.model.jsonjackson.dbtable.JsonMaintMainKodtotyRecord;
+import no.systema.z.main.maintenance.model.jsonjackson.dbtable.JsonMaintMainKundfContainer;
+import no.systema.z.main.maintenance.model.jsonjackson.dbtable.JsonMaintMainKundfRecord;
 import no.systema.z.main.maintenance.model.jsonjackson.dbtable.JsonMaintMainValufContainer;
 import no.systema.z.main.maintenance.model.jsonjackson.dbtable.JsonMaintMainValufRecord;
 import no.systema.z.main.maintenance.service.MaintMainCundfService;
+import no.systema.z.main.maintenance.service.MaintMainCustomerL1Service;
 import no.systema.z.main.maintenance.service.MaintMainKodtlikService;
 import no.systema.z.main.maintenance.service.MaintMainKodtotyService;
 import no.systema.z.main.maintenance.service.MaintMainKofastService;
 import no.systema.z.main.maintenance.service.MaintMainValufService;
+import no.systema.z.main.maintenance.url.store.ExternalUrlDataStore;
 import no.systema.z.main.maintenance.url.store.MaintenanceMainUrlDataStore;
 import no.systema.z.main.maintenance.util.MainMaintenanceConstants;
 import no.systema.z.main.maintenance.util.MessageSourceHelper;
@@ -173,6 +178,19 @@ public class MainMaintenanceCundfVkundController {
 				JsonMaintMainCundfRecord record = fetchRecord(appUser.getUser(), kundnr, firma);
 				model.put(MainMaintenanceConstants.DOMAIN_RECORD, record);
 				
+				//L1 exists
+				if(appUser.getKundeL1()!=null && "V".equals(appUser.getKundeL1())){
+					JsonMaintMainKundfRecord recordL1 = fetchRecordL1(appUser.getUser(), record.getKundnr(), record.getFirma());
+					if(StringUtils.isEmpty(recordL1.getKundnr())){
+						//copy the parent record in order to present default values for "create new" L1
+						ModelMapper modelMapper = new ModelMapper();
+						recordL1 = modelMapper.map(record, JsonMaintMainKundfRecord.class);
+						recordL1.setKundnr("");
+					}
+					model.put(MainMaintenanceConstants.DOMAIN_RECORD_L1, recordL1);
+					
+				}
+				
 				successView.addObject("tab_knavn_display", VkundControllerUtil.getTrimmedKnav(kundeSessionParams.getKnavn()));
 
 				model.put("kundnr", kundnr);
@@ -209,6 +227,41 @@ public class MainMaintenanceCundfVkundController {
 			return successView;
 		}
 
+	}
+	
+	/**
+	 * gets the L1 customer if any...
+	 * @param user
+	 * @param kundnr
+	 * @param firma
+	 * @return
+	 */
+	private JsonMaintMainKundfRecord fetchRecordL1(String user, String kundnr, String firma){
+		JsonMaintMainKundfRecord record = new JsonMaintMainKundfRecord();
+		
+		final String BASE_URL = ExternalUrlDataStore.L1_BASE_FETCH_SPECIFIC_CUSTOMER_URL;
+		//add URL-parameters
+		StringBuffer urlRequestParams = new StringBuffer();
+		urlRequestParams.append("user=" + user + "&firma=" + firma + "&kundnr=" + kundnr);
+		
+		//session.setAttribute(TransportDispConstants.ACTIVE_URL_RPG_TRANSPORT_DISP, BASE_URL + "==>params: " + urlRequestParams.toString()); 
+    	logger.info(Calendar.getInstance().getTime() + " CGI-start timestamp");
+    	logger.info("URL: " + BASE_URL);
+    	logger.info("URL PARAMS: " + urlRequestParams);
+    	String jsonPayload = this.urlCgiProxyService.getJsonContent(BASE_URL, urlRequestParams.toString());
+    	//Debug --> 
+    	logger.debug(jsonDebugger.debugJsonPayloadWithLog4J(jsonPayload));
+    	logger.info(Calendar.getInstance().getTime() +  " CGI-end timestamp");
+    	if(jsonPayload!=null){
+    		JsonMaintMainKundfContainer container = this.maintMainCustomerL1Service.getContainer(jsonPayload);
+    		if(container!=null){
+    			for( JsonMaintMainKundfRecord customerRecord: container.getList()){
+    					record = customerRecord;
+		    	}
+    			
+    		}
+    	}		
+		return record;
 	}
 
 	private void setInstalledModules(KundeSessionParams kundeSessionParams, String appUser) { //Used for views in Vareregister
@@ -1465,7 +1518,14 @@ public class MainMaintenanceCundfVkundController {
 	@Required
 	public void setMaintMainValufService (MaintMainValufService value){ this.maintMainValufService = value; }
 	public MaintMainValufService getMaintMainValufService(){ return this.maintMainValufService; }		
-		
+	
+	@Qualifier ("maintMainCustomerL1Service")
+	private MaintMainCustomerL1Service maintMainCustomerL1Service;
+	@Autowired
+	@Required
+	public void setMaintMainCutomerL1Service (MaintMainCustomerL1Service value){ this.maintMainCustomerL1Service = value; }
+	public MaintMainCustomerL1Service getMaintMainCutomerL1Service(){ return this.maintMainCustomerL1Service; }		
+	
 	
 }
 

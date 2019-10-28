@@ -855,6 +855,7 @@
 								</td>
 							</tr>	
 
+							
 							<tr> 
 								<td colspan="2" >&nbsp;
 									<table class="formFrameHeaderPeachWithBorder" width="100%" 	cellspacing="0" border="0" align="center">
@@ -957,6 +958,91 @@
 									</table>
 								</td>
 							</tr>
+							
+							<%-- L1 kundunderhåll (endast == 'V'. Om kundeL1 == 'J' då skall det ske automatiskt utan GUI. Ref. vidare i Controller...) --%>
+							<c:if test="${user.kundeL1 == 'V' && model.action == 'doUpdate'}">
+							<tr> 
+								<td colspan="2" >&nbsp;
+									<table class="formFrameHeaderPeachWithBorder" width="100%" 	cellspacing="0" border="0" align="center">
+										<tr>
+											<td class="text14Bold">&nbsp;
+												L1 
+													 
+											</td>
+										</tr>
+									</table>
+									<table class="formFramePeachGrayRoundBottom"  width="100%" cellspacing="0" border="0" align="center">
+										<tr> 
+											<td width="50%" >
+												<table border="0">
+													<tr>
+														
+														<td class="text14" title="knavnL1">&nbsp;
+															<spring:message code="systema.main.maintenance.mainmaintenancecundf.customer.customernr"/>
+															&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+														</td>
+														<td>
+															<c:choose>
+																<c:when test="${not empty model.recordL1.kundnr}">
+																	<input readonly type="text" class="inputTextReadOnly" name="kundnrL1" id="kundnrL1" size="10" value='${model.recordL1.kundnr}'>
+																</c:when>
+																<c:otherwise>
+																	<input readonly type="text" class="inputTextReadOnly" name="kundnrL1" id="kundnrL1" size="10" value=''>
+																</c:otherwise>
+															</c:choose>
+														</td>
+													</tr>
+													<tr>
+														
+														<td class="text14" title="knavnL1">&nbsp;
+															<spring:message code="systema.main.maintenance.mainmaintenancecundf.customer.name"/>:
+															&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+														</td>
+														<td><input type="text" class="inputTextMediumBlue" name="knavnL1" id="knavnL1" size="30" maxlength="30" value='${model.recordL1.knavn}'></td>
+														<td class="text14" title="sonavnL1">&nbsp;
+															<spring:message code="systema.main.maintenance.mainmaintenancecundf.customer.sonavn"/>:
+															&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+														</td>
+														<td>
+													    	<input type="text" class="inputTextMediumBlue" name="sonavnL1" id="sonavnL1" size="30" maxlength="30" value='${model.recordL1.sonavn}'>
+														</td>
+													</tr>
+													<tr>
+														<td class="text14" title="adr1L1">&nbsp;
+															<spring:message code="systema.main.maintenance.mainmaintenancecundf.customer.address"/>:
+														</td>
+														<td><input type="text" class="inputTextMediumBlue" name="adr1L1" id="adr1L1" size="30" maxlength="30" value='${Xmodel.recordL1.adr1}'></td>
+														<td class="text14" title="adr2L1">&nbsp;
+															<spring:message code="systema.main.maintenance.mainmaintenancecundf.customer.postbox"/>:
+														</td>
+														<td><input type="text" class="inputTextMediumBlue" name="adr2L1" id="adr2L1" size="30" maxlength="30" value='${Xmodel.recordL1.adr2}'></td>
+														
+													</tr>
+													
+												</table>
+											</td>
+											<td width="50%" valign="top">
+												<table>
+													<tr>
+														<td class="text14" title="todo">&nbsp;
+															Todo:
+														</td>
+														<td><input type="text" class="inputTextMediumBlue" name="adr1L1" id="adr1L1" size="30" maxlength="30" value='${Xmodel.recordL1.todo}'></td>
+														<td class="text14" title="adr2L1">&nbsp;
+															Todo:
+														</td>
+														<td><input type="text" class="inputTextMediumBlue" name="adr2L1" id="adr2L1" size="30" maxlength="30" value='${Xmodel.recordL1.todo}'></td>
+														
+													</tr>
+												</table>
+											</td>
+										</tr>
+									</table>
+								</td>
+							</tr>
+							</c:if>
+							
+							
 							<tr><td colspan="2">&nbsp;</td></tr>
 							<%-- Validation errors --%>
 							<spring:hasBindErrors name="record"> <%-- name must equal the command object name in the Controller --%>
