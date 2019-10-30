@@ -1019,6 +1019,89 @@
 														
 													</tr>
 													
+													<tr>
+														<td class="text14" title="postnrL1">&nbsp;
+															<spring:message code="systema.main.maintenance.mainmaintenancecundf.customer.postnr"/>:
+														</td>
+														<td class="text14">
+															<input type="text" onBlur="setPoststed();" onKeyPress="return numberKey(event)" class="inputTextMediumBlue" name="postnr" id="postnr" size="5" maxlength="4" value='${Xmodel.recordL1.postnr}'>
+															&nbsp;&nbsp;(utl.):&nbsp;
+										 					<img style="vertical-align:center;" width="12px" height="12px" src="resources/images/info3.png" title="Postnummer ved utenlandsk kunde">
+															<input type="text" class="inputTextMediumBlue" name="postnrL1" id="postnrL1" size="10" maxlength="9" value='${Xmodel.record.sypoge}'>
+															<c:if test="${model.hasSypogeAndNO == 'J'}">
+											 					&nbsp;<img onMouseOver="showPop('sypoge_info');" onMouseOut="hidePop('sypoge_info');"style="vertical-align:center;" width="12px" height="12px" src="resources/images/warning.png" border="0" alt="info">
+												 				<div class="text11" style="position: relative;" align="left">
+												 				<span style="position:absolute; top:2px; width:250px;" id="sypoge_info" class="popupWithInputTextGrayBg text11"  >
+												           		<b>
+												           			<spring:message code="systema.main.maintenance.mainmaintenancecundf.customer.sypoge"/>
+												 	          	</b><br><br>
+																	Ved norsk kunde kan ikke utenlandsk postnummer benyttes.
+																<br><br>
+																</span>
+																</div>
+															</c:if>			
+														</td>
+														<%--todo
+														<td class="text14">&nbsp;
+															<spring:message code="systema.main.maintenance.mainmaintenancecundf.customer.postboxnr"/>:
+										 					&nbsp;<img onMouseOver="showPop('pnpbku_info');" onMouseOut="hidePop('pnpbku_info');"style="vertical-align:bottom;" width="12px" height="12px" src="resources/images/info3.png" border="0" alt="info">
+											 				<div class="text11" style="position: relative;" align="left">
+											 				<span style="position:absolute; top:2px; width:250px;" id="pnpbku_info" class="popupWithInputText text11"  >
+													           		<b>
+																	Postnummer ved postboks:
+													 	          	</b><br><br>
+																	Hvis utfylt benyttes dette kun ved print av faktura og lignende dokumenter. <br>
+																	Kan benyttes når en ønsker avvikende postnummer på postadresse i forhold til gateadresse.<br> 
+																	(uansett om årsaken er postboks eller annet - Så lenge poststed er samme) 
+																	<br><br>
+															</span>
+															</div>
+														</td>
+														 
+														<td>
+															<input type="text" class="inputTextMediumBlue" name="pnpbku" id="pnpbku" size="10" maxlength="10" value='${model.record.pnpbku}'>
+														</td>
+														--%>
+														
+													</tr>
+													
+													<tr>
+														<td class="text14">&nbsp;<font class="text14RedBold" >*</font>
+															<spring:message code="systema.main.maintenance.mainmaintenancecundf.customer.adr3"/>:
+														</td>
+			
+														<td><input type="text" required class="inputTextMediumBlueMandatoryField" name="adr3L1" id="adr3L1" size="25" maxlength="24" value='${Xmodel.recordL1.adr3}'></td>
+			
+														<td class="text14">&nbsp;
+															<spring:message code="systema.main.maintenance.mainmaintenancecundf.customer.landcode"/>:
+			
+										 					&nbsp;<img onMouseOver="showPop('landkode_info');" onMouseOut="hidePop('landkode_info');"style="vertical-align:bottom;" width="12px" height="12px" src="resources/images/info3.png" border="0" alt="info">
+											 				<div class="text11" style="position: relative;" align="left">
+											 				<span style="position:absolute; top:2px; width:250px;" id="landkode_info" class="popupWithInputText text11">
+											           		<b>
+											           			<spring:message code="systema.main.maintenance.mainmaintenancecundf.customer.landcode"/>
+											 	          	</b><br><br>
+																Er obligatorisk hvis Visma.net Financials brukes.<br><br>
+																(settes til NO hvis feltet ikke fylles i og <spring:message code="systema.main.maintenance.mainmaintenancecundf.customer.postnr"/> er norsk.)
+															<br><br>
+															</span>
+															</div>
+														</td>
+														
+														<td class="text14">								
+														    <input type="text" class="inputTextMediumBlue" name="landL1" id="landL1" size="4" maxlength="3" value='${Xmodel.recordL1.land}'>
+															<a tabindex="-1" id="sylandIdLink">
+																<img style="cursor:pointer;vertical-align: middle;" src="resources/images/find.png" width="14px" height="14px" border="0" alt="Søk" >
+															</a>
+															
+															&nbsp;<spring:message code="systema.main.maintenance.mainmaintenancecundf.customer.language"/>:
+															&nbsp;<select name="spraakL1" id="spraakL1" > 
+						 					  					<option value="N"<c:if test="${Xmodel.recordL1.spraak == ''}"> selected </c:if> ><spring:message code="systema.main.maintenance.mainmaintenancecundf.customer.language.norway"/></option>
+											  					<option value="E"<c:if test="${Xmodel.recordL1.spraak == 'E'}"> selected </c:if> ><spring:message code="systema.main.maintenance.mainmaintenancecundf.customer.language.england"/></option>
+											  					<option value="T"<c:if test="${Xmodel.recordL1.spraak == 'T'}"> selected </c:if> ><spring:message code="systema.main.maintenance.mainmaintenancecundf.customer.language.germany"/></option>
+											  				</select>
+														</td>
+													</tr>
 												</table>
 											</td>
 											<td width="50%" valign="top">

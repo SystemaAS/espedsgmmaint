@@ -18,7 +18,7 @@ public class ExternalUrlDataStore {
 	//----------------------------
 	//http://gw.systema.no/sycgip/todo.pgm?user=OSCAR
 	@UrlDataStoreAnnotationForField (name="@EbookingMainOrderListController - ebooking_mainorderlist.do ", description=" --> EBOOKING_BASE_MAIN_ORDER_LIST_URL - fetch customer")
-	static public String L1_BASE_FETCH_SPECIFIC_CUSTOMER_URL = AppConstants.HTTP_ROOT_CGI + "/sycgip/todo.pgm";
+	static public String L1_BASE_FETCH_SPECIFIC_CUSTOMER_URL = AppConstants.HTTP_ROOT_CGI + "/sycgip/todo.pgm";//todo
 	
 	//--------------------
 	//[3] EDIT Customer

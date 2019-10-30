@@ -176,18 +176,9 @@ public class MainMaintenanceCundfKundeController {
 				record = fetchRecord(appUser.getUser(), kundeSessionParams.getKundnr(), kundeSessionParams.getFirma());
 				model.put(MainMaintenanceConstants.DOMAIN_RECORD, record);
 				//L1 -FETCH
-				JsonMaintMainKundfRecord recordL1 = fetchRecordL1(appUser, record.getKundnr());
-				if(!StringUtils.hasValue(recordL1.getKundnr())){
-					//copy the parent record in order to present default values for "create new" L1
-					ModelMapper modelMapper = new ModelMapper();
-					recordL1 = modelMapper.map(record, JsonMaintMainKundfRecord.class);
-					recordL1.setKundnr("");						
-				}
-				model.put(MainMaintenanceConstants.DOMAIN_RECORD_L1, recordL1);
-				//L1 -END FETCH
+				this.fetchL1(model, appUser, record);
 				
 				action = MainMaintenanceConstants.ACTION_UPDATE;
-
 				
 			}
 
@@ -230,6 +221,24 @@ public class MainMaintenanceCundfKundeController {
 	 * 
 	 * @param model
 	 * @param appUser
+	 * @param record
+	 */
+	private void fetchL1(Map model, SystemaWebUser appUser, JsonMaintMainCundfRecord record){
+		//L1 -FETCH
+		JsonMaintMainKundfRecord recordL1 = fetchRecordL1(appUser, record.getKundnr());
+		if(!StringUtils.hasValue(recordL1.getKundnr())){
+			//copy the parent record in order to present default values for "create new" L1
+			ModelMapper modelMapper = new ModelMapper();
+			recordL1 = modelMapper.map(record, JsonMaintMainKundfRecord.class);
+			recordL1.setKundnr("");						
+		}
+		model.put(MainMaintenanceConstants.DOMAIN_RECORD_L1, recordL1);
+		//L1 -END FETCH
+	}
+	/**
+	 * 
+	 * @param model
+	 * @param appUser
 	 * @param request
 	 * @param record
 	 */
@@ -240,14 +249,7 @@ public class MainMaintenanceCundfKundeController {
 			JsonMaintMainKundfRecord savedL1Record = updateRecordL1(appUser, params);
 			
 			if(savedL1Record!=null){
-				JsonMaintMainKundfRecord recordL1 = fetchRecordL1(appUser, savedL1Record.getKundnr());
-				if(!StringUtils.hasValue(recordL1.getKundnr())){
-					//copy the parent record in order to present default values for "create new" L1
-					ModelMapper modelMapper = new ModelMapper();
-					recordL1 = modelMapper.map(record, JsonMaintMainKundfRecord.class);
-					recordL1.setKundnr("");						
-				}
-				model.put(MainMaintenanceConstants.DOMAIN_RECORD_L1, recordL1);
+				this.fetchL1(model, appUser, record);
 				
 			}else{
 				//do something
