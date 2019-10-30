@@ -225,14 +225,18 @@ public class MainMaintenanceCundfKundeController {
 	 */
 	private void fetchL1(Map model, SystemaWebUser appUser, JsonMaintMainCundfRecord record){
 		//L1 -FETCH
-		JsonMaintMainKundfRecord recordL1 = fetchRecordL1(appUser, record.getKundnr());
-		if(!StringUtils.hasValue(recordL1.getKundnr())){
-			//copy the parent record in order to present default values for "create new" L1
-			ModelMapper modelMapper = new ModelMapper();
-			recordL1 = modelMapper.map(record, JsonMaintMainKundfRecord.class);
-			recordL1.setKundnr("");						
+		if(appUser.getKundeL1()!=null && "V".equals(appUser.getKundeL1())){
+			JsonMaintMainKundfRecord recordL1 = fetchRecordL1(appUser, record.getKundnr());
+			if(!org.apache.commons.lang3.StringUtils.isNotEmpty(recordL1.getKundnr())){
+				//copy the parent record in order to present default values for "create new" L1
+				ModelMapper modelMapper = new ModelMapper();
+				recordL1 = modelMapper.map(record, JsonMaintMainKundfRecord.class);
+				//map special attributes
+				recordL1.setLand(record.getSyland());
+				recordL1.setKundnr("");						
+			}
+			model.put(MainMaintenanceConstants.DOMAIN_RECORD_L1, recordL1);
 		}
-		model.put(MainMaintenanceConstants.DOMAIN_RECORD_L1, recordL1);
 		//L1 -END FETCH
 	}
 	/**

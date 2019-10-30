@@ -178,18 +178,9 @@ public class MainMaintenanceCundfVkundController {
 				JsonMaintMainCundfRecord record = fetchRecord(appUser.getUser(), kundnr, firma);
 				model.put(MainMaintenanceConstants.DOMAIN_RECORD, record);
 				
-				//L1 exists
-				if(appUser.getKundeL1()!=null && "V".equals(appUser.getKundeL1())){
-					JsonMaintMainKundfRecord recordL1 = fetchRecordL1(appUser.getUser(), record.getKundnr(), record.getFirma());
-					if(StringUtils.isEmpty(recordL1.getKundnr())){
-						//copy the parent record in order to present default values for "create new" L1
-						ModelMapper modelMapper = new ModelMapper();
-						recordL1 = modelMapper.map(record, JsonMaintMainKundfRecord.class);
-						recordL1.setKundnr("");
-					}
-					model.put(MainMaintenanceConstants.DOMAIN_RECORD_L1, recordL1);
-					
-				}
+				//L1 -FETCH
+				this.fetchL1(model, appUser, record);
+				
 				
 				successView.addObject("tab_knavn_display", VkundControllerUtil.getTrimmedKnav(kundeSessionParams.getKnavn()));
 
@@ -228,6 +219,28 @@ public class MainMaintenanceCundfVkundController {
 		}
 
 	}
+	/**
+	 * 
+	 * @param model
+	 * @param appUser
+	 * @param record
+	 */
+	private void fetchL1(Map model, SystemaWebUser appUser, JsonMaintMainCundfRecord record){
+		//L1 -FETCH
+		if(appUser.getKundeL1()!=null && "V".equals(appUser.getKundeL1())){
+			JsonMaintMainKundfRecord recordL1 = fetchRecordL1(appUser, record.getKundnr());
+			if(!org.apache.commons.lang3.StringUtils.isNotEmpty(recordL1.getKundnr())){
+				//copy the parent record in order to present default values for "create new" L1
+				ModelMapper modelMapper = new ModelMapper();
+				recordL1 = modelMapper.map(record, JsonMaintMainKundfRecord.class);
+				//map special attributes
+				recordL1.setLand(record.getSyland());
+				recordL1.setKundnr("");						
+			}
+			model.put(MainMaintenanceConstants.DOMAIN_RECORD_L1, recordL1);
+			//L1 -END FETCH
+		}
+	}
 	
 	/**
 	 * gets the L1 customer if any...
@@ -236,13 +249,13 @@ public class MainMaintenanceCundfVkundController {
 	 * @param firma
 	 * @return
 	 */
-	private JsonMaintMainKundfRecord fetchRecordL1(String user, String kundnr, String firma){
+	private JsonMaintMainKundfRecord fetchRecordL1(SystemaWebUser appUser, String kundnr){
 		JsonMaintMainKundfRecord record = new JsonMaintMainKundfRecord();
 		
 		final String BASE_URL = ExternalUrlDataStore.L1_BASE_FETCH_SPECIFIC_CUSTOMER_URL;
 		//add URL-parameters
 		StringBuffer urlRequestParams = new StringBuffer();
-		urlRequestParams.append("user=" + user + "&firma=" + firma + "&kundnr=" + kundnr);
+		urlRequestParams.append("user=" + appUser.getUser() + "&firma=" + appUser.getCompanyCode() + "&kundnr=" + kundnr);
 		
 		//session.setAttribute(TransportDispConstants.ACTIVE_URL_RPG_TRANSPORT_DISP, BASE_URL + "==>params: " + urlRequestParams.toString()); 
     	logger.info(Calendar.getInstance().getTime() + " CGI-start timestamp");
