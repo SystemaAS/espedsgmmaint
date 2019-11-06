@@ -131,7 +131,7 @@ public class MainMaintenanceCundfKundeController {
 						//===========================================
 						//Now update the L1 record (when applicable)
 						//===========================================
-						this.updateL1(model, appUser, request, record);
+						//TO REMOVE COMMENT! --> this.updateL1(model, appUser, request, record);
 						
 					}
 				}
@@ -168,7 +168,7 @@ public class MainMaintenanceCundfKundeController {
 						//===========================================
 						//Now update the L1 record (when applicable)
 						//===========================================
-						this.updateL1(model, appUser, request, record);
+						//this.updateL1(model, appUser, request, record);
 						
 					}
 				}
@@ -226,14 +226,19 @@ public class MainMaintenanceCundfKundeController {
 	private void fetchL1(Map model, SystemaWebUser appUser, JsonMaintMainCundfRecord record){
 		//L1 -FETCH
 		if(appUser.getKundeL1()!=null && "V".equals(appUser.getKundeL1())){
-			JsonMaintMainKundfRecord recordL1 = fetchRecordL1(appUser, record.getKundnr());
-			if(!org.apache.commons.lang3.StringUtils.isNotEmpty(recordL1.getKundnr())){
+			JsonMaintMainKundfContainer containerL1 = fetchRecordL1(appUser, record.getKundnr());
+			JsonMaintMainKundfRecord recordL1 = new JsonMaintMainKundfRecord();
+			if(org.apache.commons.lang3.StringUtils.isEmpty(recordL1.getKundnr())){
 				//copy the parent record in order to present default values for "create new" L1
 				ModelMapper modelMapper = new ModelMapper();
 				recordL1 = modelMapper.map(record, JsonMaintMainKundfRecord.class);
 				//map special attributes
 				recordL1.setLand(record.getSyland());
-				recordL1.setKundnr("");						
+				recordL1.setKundnr("");	
+				
+			}else{
+				recordL1.setKundnr(containerL1.getKundnr());
+				recordL1.setKnavn("???");
 			}
 			model.put(MainMaintenanceConstants.DOMAIN_RECORD_L1, recordL1);
 		}
@@ -281,13 +286,17 @@ public class MainMaintenanceCundfKundeController {
 	 * @param firma
 	 * @return
 	 */
-	private JsonMaintMainKundfRecord fetchRecordL1(SystemaWebUser appUser, String kundnr){
-		JsonMaintMainKundfRecord record = new JsonMaintMainKundfRecord();
+	private JsonMaintMainKundfContainer fetchRecordL1(SystemaWebUser appUser, String kundnr){
+		JsonMaintMainKundfContainer retval = new JsonMaintMainKundfContainer();
 		
+		String firma = appUser.getCompanyCode();
+		if(!StringUtils.hasValue(firma)){
+			firma = appUser.getFallbackCompanyCode();
+		}
 		final String BASE_URL = ExternalUrlDataStore.L1_BASE_FETCH_SPECIFIC_CUSTOMER_URL;
 		//add URL-parameters
 		StringBuffer urlRequestParams = new StringBuffer();
-		urlRequestParams.append("user=" + appUser.getUser() + "&firma=" + appUser.getCompanyCode() + "&kundnr=" + kundnr);
+		urlRequestParams.append("user=" + appUser.getUser() + "&mode=G&firma=" + firma + "&kundnr=" + kundnr);
 		
 		//session.setAttribute(TransportDispConstants.ACTIVE_URL_RPG_TRANSPORT_DISP, BASE_URL + "==>params: " + urlRequestParams.toString()); 
     	logger.info(Calendar.getInstance().getTime() + " CGI-start timestamp");
@@ -299,14 +308,18 @@ public class MainMaintenanceCundfKundeController {
     	logger.info(Calendar.getInstance().getTime() +  " CGI-end timestamp");
     	if(jsonPayload!=null){
     		JsonMaintMainKundfContainer container = this.maintMainCustomerL1Service.getContainer(jsonPayload);
-    		if(container!=null){
+    		logger.info(container);
+    		if(container!=null && StringUtils.hasValue(container.getKundnr())){
+    			if(!StringUtils.hasValue(container.getErrMsg())){
+    				retval = container;
+    			}
+    			/*
     			for( JsonMaintMainKundfRecord customerRecord: container.getList()){
-	    				record = customerRecord;
-		    	}
-    			
+    					record = customerRecord;
+		    	}*/
     		}
     	}		
-		return record;
+		return retval;
 	}
 	/**
 	 * 

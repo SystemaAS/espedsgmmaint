@@ -29,10 +29,10 @@ public class JsonCustomerL1Mapper extends ObjectMapperAbstractGrandFather {
 		
 		//At this point we now have an UTF-8 payload
 		JsonMaintMainKundfContainer container = super.getObjectMapper().readValue(utfPayload.getBytes(), JsonMaintMainKundfContainer.class); 
-		logger.info("[JSON-String payload status=OK]  " + container.getUser());
-		for (JsonMaintMainKundfRecord record : container.getList()){
+		logger.info("[JSON-String payload status=OK]  " + container.getUser() + " Kundnr: "+ container.getKundnr());
+		//for (JsonMaintMainKundfRecord record : container.getList()){
 			//DEBUG
-		}
+		//}
 		
 		return container;
 	}
