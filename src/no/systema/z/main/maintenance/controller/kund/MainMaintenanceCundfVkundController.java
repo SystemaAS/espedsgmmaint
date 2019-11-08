@@ -104,6 +104,8 @@ public class MainMaintenanceCundfVkundController {
 	private static final JsonDebugger jsonDebugger = new JsonDebugger();
 	private boolean KOFAST_NO_ID = true; 
 	private CodeDropDownMgr codeDropDownMgr = new CodeDropDownMgr();
+	private KundfManager kundfManager;
+	
 	
 	@Autowired
 	VkundControllerUtil vkundControllerUtil;
@@ -161,6 +163,8 @@ public class MainMaintenanceCundfVkundController {
 		String firma = recordToValidate.getFirma();
 		StringBuffer errMsg = new StringBuffer();
 		int dmlRetval = 0;
+		this.kundfManager = new KundfManager(this.urlCgiProxyService, this.maintMainCustomerL1Service);
+		
 
 		KundeSessionParams kundeSessionParams = new KundeSessionParams();
 
@@ -177,9 +181,8 @@ public class MainMaintenanceCundfVkundController {
 				
 				JsonMaintMainCundfRecord record = fetchRecord(appUser.getUser(), kundnr, firma);
 				model.put(MainMaintenanceConstants.DOMAIN_RECORD, record);
-				
 				//L1 -FETCH
-				this.fetchL1(model, appUser, record);
+				this.kundfManager.fetchL1(model, appUser, record);
 				
 				
 				successView.addObject("tab_knavn_display", VkundControllerUtil.getTrimmedKnav(kundeSessionParams.getKnavn()));
@@ -219,77 +222,12 @@ public class MainMaintenanceCundfVkundController {
 		}
 
 	}
-	/**
-	 * 
-	 * @param model
-	 * @param appUser
-	 * @param record
-	 */
-	private void fetchL1(Map model, SystemaWebUser appUser, JsonMaintMainCundfRecord record){
-		//L1 -FETCH
-		if(appUser.getKundeL1()!=null && "V".equals(appUser.getKundeL1())){
-			JsonMaintMainKundfContainer containerL1 = fetchRecordL1(appUser, record.getKundnr()); 
-			JsonMaintMainKundfRecord recordL1 = new JsonMaintMainKundfRecord();
-			if(containerL1!=null && org.apache.commons.lang3.StringUtils.isEmpty(containerL1.getKundnr())){
-				//copy the parent record in order to present default values for "create new" L1
-				ModelMapper modelMapper = new ModelMapper();
-				recordL1 = modelMapper.map(record, JsonMaintMainKundfRecord.class);
-				//map special attributes
-				recordL1.setLand(record.getSyland());
-				recordL1.setKundnr("");						
-			}else{
-				recordL1.setKundnr(containerL1.getKundnr());
-				recordL1.setKnavn("???");
-			}
-			
-			model.put(MainMaintenanceConstants.DOMAIN_RECORD_L1, recordL1);
-			//L1 -END FETCH
-		}
-	}
 	
 	/**
-	 * gets the L1 customer if any...
-	 * @param user
-	 * @param kundnr
-	 * @param firma
-	 * @return
+	 * 
+	 * @param kundeSessionParams
+	 * @param appUser
 	 */
-	private JsonMaintMainKundfContainer fetchRecordL1(SystemaWebUser appUser, String kundnr){
-		JsonMaintMainKundfContainer retval = new JsonMaintMainKundfContainer();
-		
-		String firma = appUser.getCompanyCode();
-		if(StringUtils.isEmpty(firma)){
-			firma = appUser.getFallbackCompanyCode();
-		}
-		final String BASE_URL = ExternalUrlDataStore.L1_BASE_FETCH_SPECIFIC_CUSTOMER_URL;
-		//add URL-parameters
-		StringBuffer urlRequestParams = new StringBuffer();
-		urlRequestParams.append("user=" + appUser.getUser() + "&mode=G&firma=" + firma + "&kundnr=" + kundnr);
-		
-		//session.setAttribute(TransportDispConstants.ACTIVE_URL_RPG_TRANSPORT_DISP, BASE_URL + "==>params: " + urlRequestParams.toString()); 
-    	logger.info(Calendar.getInstance().getTime() + " CGI-start timestamp");
-    	logger.info("URL: " + BASE_URL);
-    	logger.info("URL PARAMS: " + urlRequestParams);
-    	String jsonPayload = this.urlCgiProxyService.getJsonContent(BASE_URL, urlRequestParams.toString());
-    	//Debug --> 
-    	logger.debug(jsonDebugger.debugJsonPayloadWithLog4J(jsonPayload));
-    	logger.info(Calendar.getInstance().getTime() +  " CGI-end timestamp");
-    	if(jsonPayload!=null){
-    		JsonMaintMainKundfContainer container = this.maintMainCustomerL1Service.getContainer(jsonPayload);
-    		logger.info(container);
-    		if(container!=null && StringUtils.isNotEmpty(container.getKundnr())){
-    			if(StringUtils.isEmpty(container.getErrMsg())){
-    				retval = container;
-    			}
-    			/*
-    			for( JsonMaintMainKundfRecord customerRecord: container.getList()){
-    					record = customerRecord;
-		    	}*/
-    		}
-    	}		
-		return retval;
-	}
-
 	private void setInstalledModules(KundeSessionParams kundeSessionParams, String appUser) { //Used for views in Vareregister
 		FirmDao firmDao = getFirmDao(appUser);
 		if ("J".equals(firmDao.getFiurse())) {

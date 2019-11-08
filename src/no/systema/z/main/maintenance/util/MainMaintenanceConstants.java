@@ -55,6 +55,8 @@ public final class MainMaintenanceConstants {
 	public static final String DOMAIN_MODEL = "model";
 	public static final String DOMAIN_RECORD = "record";
 	public static final String DOMAIN_RECORD_L1 = "recordL1";
+	public static final String DOMAIN_CONTAINER_L1 = "containerL1";
+	
 	public static final String DOMAIN_LIST = "list";
 	public static final String DOMAIN_LIST_SIZE = "listSize";
 	

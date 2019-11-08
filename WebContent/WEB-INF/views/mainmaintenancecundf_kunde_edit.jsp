@@ -172,7 +172,7 @@
 								<c:if test="${model.action == 'doCreate'}">
 									<c:if test="${model.invoiceCustomerAllowed == 'J'}">
 										<tr>
-											<td class="text14" title="knavn">&nbsp;<font class="text14RedBold" >*</font>
+											<td class="text14" title="kundetype">&nbsp;<font class="text14RedBold" >*</font>
 												<spring:message code="systema.main.maintenance.mainmaintenancecundf.customer.customertype"/>:
 											</td>
 											<td>
@@ -960,15 +960,12 @@
 							</tr>
 							
 							<%-- L1 kundunderhåll (endast == 'V'. Om kundeL1 == 'J' då skall det ske automatiskt utan GUI. Ref. vidare i Controller...) --%>
-							<c:if test="${user.kundeL1 == 'V' && model.action == 'doUpdate'}">
+							<c:if test="${user.kundeL1 == 'V'}">
 							<tr> 
 								<td colspan="2" >&nbsp;
 									<table class="formFrameHeaderPeachWithBorder" width="100%" 	cellspacing="0" border="0" align="center">
 										<tr>
-											<td class="text14Bold">&nbsp;
-												L1 
-													 
-											</td>
+											<td class="text14Bold">&nbsp;L1</td>
 										</tr>
 									</table>
 									<table class="formFramePeachGrayRoundBottom"  width="100%" cellspacing="0" border="0" align="center">
@@ -977,129 +974,63 @@
 												<table border="0">
 													<tr>
 														
-														<td class="text14" title="knavnL1">&nbsp;
+														<td class="text14" title="l1_Kundnr">&nbsp;
 															<spring:message code="systema.main.maintenance.mainmaintenancecundf.customer.customernr"/>
 															&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
 														</td>
 														<td>
 															<c:choose>
-																<c:when test="${not empty model.recordL1.kundnr}">
-																	<input readonly type="text" class="inputTextReadOnly" name="kundnrL1" id="kundnrL1" size="10" value='${model.recordL1.kundnr}'>
+																<c:when test="${not empty model.containerL1.kundnr}">
+																	<input readonly type="text" class="inputTextReadOnly" name="l1_Kundnr" id="l1_Kundnr" size="10" value='${model.containerL1.kundnr}'>
 																</c:when>
 																<c:otherwise>
-																	<input readonly type="text" class="inputTextReadOnly" name="kundnrL1" id="kundnrL1" size="10" value=''>
+																	<input readonly type="text" class="inputTextReadOnly" name="l1_Kundnr" id="l1_Kundnr" size="10" value=''>
 																</c:otherwise>
 															</c:choose>
 														</td>
 													</tr>
 													<tr>
 														
-														<td class="text14" title="knavnL1">&nbsp;
-															<spring:message code="systema.main.maintenance.mainmaintenancecundf.customer.name"/>:
+														<td class="text14" title="l1_Head">&nbsp;Språk Header/ledetekster
 															&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
 														</td>
-														<td><input type="text" class="inputTextMediumBlue" name="knavnL1" id="knavnL1" size="30" maxlength="30" value='${model.recordL1.knavn}'></td>
-														<td class="text14" title="sonavnL1">&nbsp;
-															<spring:message code="systema.main.maintenance.mainmaintenancecundf.customer.sonavn"/>:
+														<td><input type="text" class="inputTextMediumBlue" name="l1_Head" id="l1_Head" size="2" maxlength="1" value='${model.containerL1.l1_Head}'></td>
+														<td class="text14" title="l1_KundGr">&nbsp;Kundegruppe
 															&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
 														</td>
 														<td>
-													    	<input type="text" class="inputTextMediumBlue" name="sonavnL1" id="sonavnL1" size="30" maxlength="30" value='${model.recordL1.sonavn}'>
+													    	<input type="text" class="inputTextMediumBlue" name="l1_KundGr" id="l1_KundGr" size="3" maxlength="2" value='${model.containerL1.l1_KundGr}'>
 														</td>
 													</tr>
 													<tr>
-														<td class="text14" title="adr1L1">&nbsp;
-															<spring:message code="systema.main.maintenance.mainmaintenancecundf.customer.address"/>:
-														</td>
-														<td><input type="text" class="inputTextMediumBlue" name="adr1L1" id="adr1L1" size="30" maxlength="30" value='${model.recordL1.adr1}'></td>
-														<td class="text14" title="adr2L1">&nbsp;
-															<spring:message code="systema.main.maintenance.mainmaintenancecundf.customer.postbox"/>:
-														</td>
-														<td><input type="text" class="inputTextMediumBlue" name="adr2L1" id="adr2L1" size="30" maxlength="30" value='${model.recordL1.adr2}'></td>
+														<td class="text14" title="l1_Feks">&nbsp;Ant Faktura</td>
+														<td><input type="text" onKeyPress="return numberKey(event)" class="inputTextMediumBlue" name="l1_Feks" id="l1_Feks" size="2" maxlength="1" value='${model.containerL1.l1_Feks}'></td>
+														<td class="text14" title="l1_Pkod">&nbsp;Purrekode</td>
+														<td><input type="text" class="inputTextMediumBlue" name="l1_Pkod" id="l1_Pkod" size="2" maxlength="1" value='${model.containerL1.l1_Pkod}'></td>
 														
 													</tr>
 													
 													<tr>
-														<td class="text14" title="postnrL1">&nbsp;
-															<spring:message code="systema.main.maintenance.mainmaintenancecundf.customer.postnr"/>:
-														</td>
+														<td class="text14" title="l1_Kutdr">&nbsp;KontoUtdr.Kode</td>
 														<td class="text14">
-															<input type="text" onBlur="setPoststed();" onKeyPress="return numberKey(event)" class="inputTextMediumBlue" name="postnrL1" id="postnrL1" size="5" maxlength="4" value='${model.recordL1.postnr}'>
-															&nbsp;&nbsp;(utl.):&nbsp;
-										 					<img style="vertical-align:center;" width="12px" height="12px" src="resources/images/info3.png" title="Postnummer ved utenlandsk kunde">
-															<input type="text" class="inputTextMediumBlue" name="sypogeL1?" id="sypogeL1?" size="10" maxlength="9" value='${Xmodel.recordL1.todo}'>
-															<c:if test="${model.hasSypogeAndNO == 'J'}">
-											 					&nbsp;<img onMouseOver="showPop('sypoge_info');" onMouseOut="hidePop('sypoge_info');"style="vertical-align:center;" width="12px" height="12px" src="resources/images/warning.png" border="0" alt="info">
-												 				<div class="text11" style="position: relative;" align="left">
-												 				<span style="position:absolute; top:2px; width:250px;" id="sypoge_info" class="popupWithInputTextGrayBg text11"  >
-												           		<b>
-												           			<spring:message code="systema.main.maintenance.mainmaintenancecundf.customer.sypoge"/>
-												 	          	</b><br><br>
-																	Ved norsk kunde kan ikke utenlandsk postnummer benyttes.
-																<br><br>
-																</span>
-																</div>
-															</c:if>			
+															<input type="text" class="inputTextMediumBlue" name="l1_Kutdr" id="l1_Kutdr" size="2" maxlength="1" value='${model.containerL1.l1_Kutdr}'>
+																	
 														</td>
-														<%--todo
-														<td class="text14">&nbsp;
-															<spring:message code="systema.main.maintenance.mainmaintenancecundf.customer.postboxnr"/>:
-										 					&nbsp;<img onMouseOver="showPop('pnpbku_info');" onMouseOut="hidePop('pnpbku_info');"style="vertical-align:bottom;" width="12px" height="12px" src="resources/images/info3.png" border="0" alt="info">
-											 				<div class="text11" style="position: relative;" align="left">
-											 				<span style="position:absolute; top:2px; width:250px;" id="pnpbku_info" class="popupWithInputText text11"  >
-													           		<b>
-																	Postnummer ved postboks:
-													 	          	</b><br><br>
-																	Hvis utfylt benyttes dette kun ved print av faktura og lignende dokumenter. <br>
-																	Kan benyttes når en ønsker avvikende postnummer på postadresse i forhold til gateadresse.<br> 
-																	(uansett om årsaken er postboks eller annet - Så lenge poststed er samme) 
-																	<br><br>
-															</span>
-															</div>
+														<td class="text14" title="l1_Khenv">&nbsp;KontoHenvisning</td>
+														<td class="text14">
+															<input type="text" class="inputTextMediumBlue" name="l1_Khenv" id="l1_Khenv" size="4" maxlength="3" value='${model.containerL1.l1_Khenv}'>
 														</td>
-														 
-														<td>
-															<input type="text" class="inputTextMediumBlue" name="pnpbku" id="pnpbku" size="10" maxlength="10" value='${model.record.pnpbku}'>
-														</td>
-														--%>
-														
 													</tr>
 													
 													<tr>
-														<td class="text14">&nbsp;
-															<spring:message code="systema.main.maintenance.mainmaintenancecundf.customer.adr3"/>:
-														</td>
+														<td class="text14">&nbsp;PurreGebyr</td>
+														<td><input type="text" class="inputTextMediumBlue" name="l1_Pgebyr" id="l1_Pgebyr" size="2" maxlength="1" value='${model.containerL1.l1_Pgebyr}'></td>
 			
-														<td><input type="text" required class="inputTextMediumBlue" name="adr3L1" id="adr3L1" size="25" maxlength="24" value='${model.recordL1.adr3}'></td>
-			
-														<td class="text14">&nbsp;
-															<spring:message code="systema.main.maintenance.mainmaintenancecundf.customer.landcode"/>:
-			
-										 					&nbsp;<img onMouseOver="showPop('landkode_info');" onMouseOut="hidePop('landkode_info');"style="vertical-align:bottom;" width="12px" height="12px" src="resources/images/info3.png" border="0" alt="info">
-											 				<div class="text11" style="position: relative;" align="left">
-											 				<span style="position:absolute; top:2px; width:250px;" id="landkode_info" class="popupWithInputText text11">
-											           		<b>
-											           			<spring:message code="systema.main.maintenance.mainmaintenancecundf.customer.landcode"/>
-											 	          	</b><br><br>
-																Er obligatorisk hvis Visma.net Financials brukes.<br><br>
-																(settes til NO hvis feltet ikke fylles i og <spring:message code="systema.main.maintenance.mainmaintenancecundf.customer.postnr"/> er norsk.)
-															<br><br>
-															</span>
-															</div>
-														</td>
-														
+														<td class="text14">&nbsp;Dato opprettet (År-Mnd-Dag)</td>
 														<td class="text14">								
-														    <input type="text" class="inputTextMediumBlue" name="landL1" id="landL1" size="4" maxlength="3" value='${model.recordL1.land}'>
-															<a tabindex="-1" id="sylandIdLink">
-																<img style="cursor:pointer;vertical-align: middle;" src="resources/images/find.png" width="14px" height="14px" border="0" alt="Søk" >
-															</a>
-															
-															&nbsp;<spring:message code="systema.main.maintenance.mainmaintenancecundf.customer.language"/>:
-															&nbsp;<select name="spraakL1" id="spraakL1" > 
-						 					  					<option value="N"<c:if test="${model.recordL1.spraak == ''}"> selected </c:if> ><spring:message code="systema.main.maintenance.mainmaintenancecundf.customer.language.norway"/></option>
-											  					<option value="E"<c:if test="${model.recordL1.spraak == 'E'}"> selected </c:if> ><spring:message code="systema.main.maintenance.mainmaintenancecundf.customer.language.england"/></option>
-											  					<option value="T"<c:if test="${model.recordL1.spraak == 'T'}"> selected </c:if> ><spring:message code="systema.main.maintenance.mainmaintenancecundf.customer.language.germany"/></option>
-											  				</select>
+														    <input type="text" onKeyPress="return numberKey(event)" class="inputTextMediumBlue" name="l1_DaoAar" id="l1_DaoAar" size="4" maxlength="4" value='${model.containerL1.l1_DaoAar}'>
+														    <input type="text" onKeyPress="return numberKey(event)" class="inputTextMediumBlue" name="l1_DaoMnd" id="l1_DaoMnd" size="2" maxlength="2" value='${model.containerL1.l1_DaoMnd}'>
+														    <input type="text" onKeyPress="return numberKey(event)" class="inputTextMediumBlue" name="l1_DaoDag" id="l1_DaoDag" size="2" maxlength="2" value='${model.containerL1.l1_DaoDag}'>
 														</td>
 													</tr>
 												</table>

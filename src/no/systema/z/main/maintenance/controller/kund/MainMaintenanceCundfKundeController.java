@@ -66,6 +66,7 @@ public class MainMaintenanceCundfKundeController {
 	private static final JsonDebugger jsonDebugger = new JsonDebugger();
 	private UrlRequestParameterMapper urlRequestParameterMapper = new UrlRequestParameterMapper();
 	private CodeDropDownMgr codeDropDownMgr = new CodeDropDownMgr();
+	private KundfManager kundfManager;
 	
 	@Autowired
 	VkundControllerUtil vkundControllerUtil;	
@@ -79,6 +80,7 @@ public class MainMaintenanceCundfKundeController {
 		StringBuffer errMsg = new StringBuffer();
 		JsonMaintMainCundfRecord savedRecord = null;
 		JsonMaintMainCundfRecord record = null;
+		this.kundfManager = new KundfManager(this.urlCgiProxyService, this.maintMainCustomerL1Service);
 		
 		logger.info("recordToValidate="+ReflectionToStringBuilder.toString(recordToValidate));
 		logger.info("action="+action);
@@ -95,9 +97,7 @@ public class MainMaintenanceCundfKundeController {
 			if (MainMaintenanceConstants.ACTION_CREATE.equals(action)) {  //New
 
 				theBetBetFix(appUser, recordToValidate, action);
-	
 				specialRules(recordToValidate);
-				
 				
 				// Validate
 				MaintMainCundfValidator validator = new MaintMainCundfValidator();
@@ -105,10 +105,20 @@ public class MainMaintenanceCundfKundeController {
 				if (bindingResult.hasErrors()) {
 					logger.info("[ERROR Validation] Record does not validate)");
 					model.put(MainMaintenanceConstants.DOMAIN_RECORD, recordToValidate);
-					
 					action = MainMaintenanceConstants.ACTION_CREATE;
 					 
 				} else {
+					//===========================================
+					//Now update the L1 record (when applicable)
+					//===========================================
+					if(this.isL1ValidForCreate(appUser, recordToValidate)){
+						JsonMaintMainKundfContainer savedL1Record = this.updateL1(model, appUser, request, recordToValidate);
+						if(savedL1Record!=null){
+							recordToValidate.setKundnr(savedL1Record.getKundnr());
+							logger.info("handover to recordToValidate OK");
+						}	
+					}
+					
 					savedRecord = updateRecord(appUser, recordToValidate, MainMaintenanceConstants.MODE_ADD, errMsg);
 					if (savedRecord == null) {
 						logger.info("[ERROR Validation] Record does not validate)");
@@ -124,24 +134,20 @@ public class MainMaintenanceCundfKundeController {
 						kundeSessionParams.setKnavn(savedRecord.getKnavn());
 
 						record = fetchRecord(appUser.getUser(), kundeSessionParams.getKundnr(), kundeSessionParams.getFirma());
+						//L1 -FETCH
+						this.kundfManager.fetchL1(model, appUser, record);
 						model.put(MainMaintenanceConstants.DOMAIN_RECORD, record);
-						
 						action = MainMaintenanceConstants.ACTION_UPDATE;
-						
-						//===========================================
-						//Now update the L1 record (when applicable)
-						//===========================================
-						//TO REMOVE COMMENT! --> this.updateL1(model, appUser, request, record);
-						
+		
 					}
+					
+					
 				}
 
 			} else if (MainMaintenanceConstants.ACTION_UPDATE.equals(action)) { //Update
 
 				adjustRecordToValidate(recordToValidate, kundeSessionParams);
-	
 				theBetBetFix(appUser, recordToValidate, action);
-	
 				specialRules(recordToValidate);
 				
 				
@@ -151,6 +157,7 @@ public class MainMaintenanceCundfKundeController {
 					logger.error("[ERROR Validation] Record does not validate)");
 					model.put(MainMaintenanceConstants.DOMAIN_RECORD, recordToValidate);
 				} else {
+					
 					savedRecord = updateRecord(appUser, recordToValidate, MainMaintenanceConstants.MODE_UPDATE, errMsg);
 					if (savedRecord == null) {            
 						logger.error("[ERROR Update] Record could not be updated, errMsg="+errMsg.toString());
@@ -164,11 +171,11 @@ public class MainMaintenanceCundfKundeController {
 					} else {
 						record = this.fetchRecord(appUser.getUser(), kundeSessionParams.getKundnr(), kundeSessionParams.getFirma());
 						model.put(MainMaintenanceConstants.DOMAIN_RECORD, record);
-						
 						//===========================================
 						//Now update the L1 record (when applicable)
 						//===========================================
-						//this.updateL1(model, appUser, request, record);
+						this.updateL1(model, appUser, request, record);
+						this.kundfManager.fetchL1(model, appUser, record);
 						
 					}
 				}
@@ -176,7 +183,7 @@ public class MainMaintenanceCundfKundeController {
 				record = fetchRecord(appUser.getUser(), kundeSessionParams.getKundnr(), kundeSessionParams.getFirma());
 				model.put(MainMaintenanceConstants.DOMAIN_RECORD, record);
 				//L1 -FETCH
-				this.fetchL1(model, appUser, record);
+				this.kundfManager.fetchL1(model, appUser, record);
 				
 				action = MainMaintenanceConstants.ACTION_UPDATE;
 				
@@ -218,117 +225,93 @@ public class MainMaintenanceCundfKundeController {
 
 	}
 	/**
-	 * 
-	 * @param model
+	 * Checks if the customer (at a firm level) has L1 as Master Economy System
 	 * @param appUser
-	 * @param record
+	 * @param kundeType
+	 * @return
 	 */
-	private void fetchL1(Map model, SystemaWebUser appUser, JsonMaintMainCundfRecord record){
-		//L1 -FETCH
-		if(appUser.getKundeL1()!=null && "V".equals(appUser.getKundeL1())){
-			JsonMaintMainKundfContainer containerL1 = fetchRecordL1(appUser, record.getKundnr());
-			JsonMaintMainKundfRecord recordL1 = new JsonMaintMainKundfRecord();
-			if(org.apache.commons.lang3.StringUtils.isEmpty(recordL1.getKundnr())){
-				//copy the parent record in order to present default values for "create new" L1
-				ModelMapper modelMapper = new ModelMapper();
-				recordL1 = modelMapper.map(record, JsonMaintMainKundfRecord.class);
-				//map special attributes
-				recordL1.setLand(record.getSyland());
-				recordL1.setKundnr("");	
-				
-			}else{
-				recordL1.setKundnr(containerL1.getKundnr());
-				recordL1.setKnavn("???");
-			}
-			model.put(MainMaintenanceConstants.DOMAIN_RECORD_L1, recordL1);
+	private boolean isL1ValidForCreate(SystemaWebUser appUser, JsonMaintMainCundfRecord recordToValidate){
+		boolean retval = false;
+		//===========================================
+		//Now update the L1 record (when applicable)
+		//===========================================
+		String FAKTURAKUNDE = "F"; //adressekunder("A") skall inte ingå här
+		String L1_EXISTS = "V";
+		String ACTIVE_KUNDE = "A";
+		
+		if(L1_EXISTS.equals(appUser.getKundeL1()) && FAKTURAKUNDE.equals(recordToValidate.getKundetype()) && ACTIVE_KUNDE.equals(recordToValidate.getAktkod())){
+			retval = true;
 		}
-		//L1 -END FETCH
+		
+		return retval;
 	}
+	
 	/**
 	 * 
 	 * @param model
 	 * @param appUser
 	 * @param request
-	 * @param record
+	 * @param recordToValidate
+	 * @return
 	 */
-	private void updateL1(Map model, SystemaWebUser appUser, HttpServletRequest request, JsonMaintMainCundfRecord record){
+	private JsonMaintMainKundfContainer updateL1(Map model, SystemaWebUser appUser, HttpServletRequest request, JsonMaintMainCundfRecord record){
+		JsonMaintMainKundfContainer retval = null;
 		
 		if(appUser.getKundeL1()!=null && "V".equals(appUser.getKundeL1())){
-			JsonMaintMainKundfRecord params = this.setL1Params(request);
-			JsonMaintMainKundfRecord savedL1Record = updateRecordL1(appUser, params);
-			
-			if(savedL1Record!=null){
-				this.fetchL1(model, appUser, record);
-				
+			JsonMaintMainKundfRecord params = this.setL1Params(request, record, appUser);
+			logger.info("###############:" + params);
+			JsonMaintMainKundfContainer savedL1Record = updateRecordL1(appUser, params);
+			if(savedL1Record!=null && StringUtils.hasValue(savedL1Record.getKundnr())){
+				logger.info("############### - UPDATE L1 = SUCCESS - kundnr:" + savedL1Record.getKundnr());
+				retval = savedL1Record;
 			}else{
-				//do something
+				logger.info("############### - ERROR SEVERE on update L1:");
 			}
 		}
+		return retval;
 	}
 	
 	/**
 	 * transfer object before update
-	 * 
 	 * @param request
+	 * @param recordCundf
 	 * @return
 	 */
-	private JsonMaintMainKundfRecord setL1Params(HttpServletRequest request){
-		JsonMaintMainKundfRecord record = new JsonMaintMainKundfRecord();
-		record.setKundnr(request.getParameter("kundnrL1"));
-		record.setKnavn(request.getParameter("knavnL1"));
+	private JsonMaintMainKundfRecord setL1Params(HttpServletRequest request, JsonMaintMainCundfRecord recordCundf, SystemaWebUser appUser){
 		
-		return record;
-	}
-	/**
-	 * get from L1 record (KUNDF)
-	 * @param user
-	 * @param kundnr
-	 * @param firma
-	 * @return
-	 */
-	private JsonMaintMainKundfContainer fetchRecordL1(SystemaWebUser appUser, String kundnr){
-		JsonMaintMainKundfContainer retval = new JsonMaintMainKundfContainer();
-		
-		String firma = appUser.getCompanyCode();
-		if(!StringUtils.hasValue(firma)){
-			firma = appUser.getFallbackCompanyCode();
+		JsonMaintMainKundfRecord recordL1 = new JsonMaintMainKundfRecord();
+		ModelMapper modelMapper = new ModelMapper();
+		recordL1 = modelMapper.map(recordCundf, JsonMaintMainKundfRecord.class);
+		if(!StringUtils.hasValue(recordL1.getFirma())){
+			String firma = appUser.getCompanyCode();
+			if(!StringUtils.hasValue(firma)){
+				firma = appUser.getFallbackCompanyCode();
+			}
+			recordL1.setFirma(firma);
 		}
-		final String BASE_URL = ExternalUrlDataStore.L1_BASE_FETCH_SPECIFIC_CUSTOMER_URL;
-		//add URL-parameters
-		StringBuffer urlRequestParams = new StringBuffer();
-		urlRequestParams.append("user=" + appUser.getUser() + "&mode=G&firma=" + firma + "&kundnr=" + kundnr);
+		recordL1.setLand(recordCundf.getSyland());
+		//delta fields found only in L1
+		recordL1.setKundnr(request.getParameter("l1_Kundnr"));
+		recordL1.setHead(request.getParameter("l1_Head"));
+		recordL1.setKundgr(request.getParameter("l1_KundGr"));
+		recordL1.setFeks(request.getParameter("l1_Feks"));
+		recordL1.setPkod(request.getParameter("l1_Pkod"));
+		recordL1.setPgebyr(request.getParameter("l1_Pgebyr"));
+		recordL1.setDaoaar(request.getParameter("l1_DaoAar"));
+		recordL1.setDaomnd(request.getParameter("l1_DaoMnd"));
+		recordL1.setDaodag(request.getParameter("l1_DaoDag"));
 		
-		//session.setAttribute(TransportDispConstants.ACTIVE_URL_RPG_TRANSPORT_DISP, BASE_URL + "==>params: " + urlRequestParams.toString()); 
-    	logger.info(Calendar.getInstance().getTime() + " CGI-start timestamp");
-    	logger.info("URL: " + BASE_URL);
-    	logger.info("URL PARAMS: " + urlRequestParams);
-    	String jsonPayload = this.urlCgiProxyService.getJsonContent(BASE_URL, urlRequestParams.toString());
-    	//Debug --> 
-    	logger.debug(jsonDebugger.debugJsonPayloadWithLog4J(jsonPayload));
-    	logger.info(Calendar.getInstance().getTime() +  " CGI-end timestamp");
-    	if(jsonPayload!=null){
-    		JsonMaintMainKundfContainer container = this.maintMainCustomerL1Service.getContainer(jsonPayload);
-    		logger.info(container);
-    		if(container!=null && StringUtils.hasValue(container.getKundnr())){
-    			if(!StringUtils.hasValue(container.getErrMsg())){
-    				retval = container;
-    			}
-    			/*
-    			for( JsonMaintMainKundfRecord customerRecord: container.getList()){
-    					record = customerRecord;
-		    	}*/
-    		}
-    	}		
-		return retval;
+		return recordL1;
 	}
+	
 	/**
 	 * 
 	 * @param user
 	 * @param recordL1ToValidate
 	 * @return
 	 */
-	private JsonMaintMainKundfRecord updateRecordL1(SystemaWebUser appUser, JsonMaintMainKundfRecord recordL1){
-		JsonMaintMainKundfRecord record = new JsonMaintMainKundfRecord();
+	private JsonMaintMainKundfContainer updateRecordL1(SystemaWebUser appUser, JsonMaintMainKundfRecord recordL1){
+		JsonMaintMainKundfContainer record = new JsonMaintMainKundfContainer();
 		
 		final String BASE_URL = ExternalUrlDataStore.L1_BASE_UPDATE_SPECIFIC_CUSTOMER_URL;
 		//add URL-parameters
@@ -348,10 +331,8 @@ public class MainMaintenanceCundfKundeController {
     	logger.info(Calendar.getInstance().getTime() +  " CGI-end timestamp");
     	if(jsonPayload!=null){
     		JsonMaintMainKundfContainer container = this.maintMainCustomerL1Service.getContainer(jsonPayload);
-    		if(container!=null){
-    			for( JsonMaintMainKundfRecord customerRecord: container.getList()){
-	    				record = customerRecord;
-		    	}
+    		if(container!=null && !StringUtils.hasValue(container.getErrMsg())){ 
+    			record = container;
     			
     		}
     	}		
