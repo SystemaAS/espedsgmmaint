@@ -959,15 +959,27 @@
 								</td>
 							</tr>
 							
-							<%-- L1 kundunderhåll (endast == 'V'. Om kundeL1 == 'J' då skall det ske automatiskt utan GUI. Ref. vidare i Controller...) --%>
-							<c:if test="${user.kundeL1 == 'V'}">
+							<%-- L1 kundunderhåll (endast == 'V' for GUI elements L1. 
+								 Om kundeL1 == 'J' då skall det ske automatiskt utan GUI. Ref. vidare i Controller...) 
+							--%>
+							<c:if test="${not empty user.kundeL1}">
 							<tr> 
 								<td colspan="2" >&nbsp;
 									<table class="formFrameHeaderPeachWithBorder" width="100%" 	cellspacing="0" border="0" align="center">
 										<tr>
-											<td class="text14Bold">&nbsp;L1</td>
+											<td class="text14Bold">&nbsp;L1
+												<c:choose>
+													<c:when test="${user.kundeL1 == 'V'}">
+														<img style="cursor:pointer;vertical-align: middle;" src="resources/images/bulletGreen.gif" border="0" >
+													</c:when>
+													<c:otherwise>
+														<img style="cursor:pointer;vertical-align: middle;" src="resources/images/bulletYellow.gif" border="0" >
+													</c:otherwise>
+												</c:choose>
+											</td>
 										</tr>
 									</table>
+									<c:if test="${user.kundeL1 == 'V'}">
 									<table class="formFramePeachGrayRoundBottom"  width="100%" cellspacing="0" border="0" align="center">
 										<tr> 
 											<td width="50%" >
@@ -1049,9 +1061,11 @@
 														
 													</tr>
 												</table>
+												
 											</td>
 										</tr>
 									</table>
+									</c:if>
 								</td>
 							</tr>
 							</c:if>

@@ -67,6 +67,8 @@ public class MainMaintenanceCundfKundeController {
 	private UrlRequestParameterMapper urlRequestParameterMapper = new UrlRequestParameterMapper();
 	private CodeDropDownMgr codeDropDownMgr = new CodeDropDownMgr();
 	private KundfManager kundfManager;
+	private final String L1_EXISTS_VISIBLE = "V";
+	private final String L1_EXISTS_INVISIBLE = "J";
 	
 	@Autowired
 	VkundControllerUtil vkundControllerUtil;	
@@ -116,32 +118,12 @@ public class MainMaintenanceCundfKundeController {
 						if(savedL1Record!=null){
 							recordToValidate.setKundnr(savedL1Record.getKundnr());
 							logger.info("handover to recordToValidate OK");
+							//proceed with cundf create
+							action = this.updateCundf(model, appUser, kundeSessionParams, recordToValidate, record, savedRecord, errMsg);
 						}	
-					}
-					
-					savedRecord = updateRecord(appUser, recordToValidate, MainMaintenanceConstants.MODE_ADD, errMsg);
-					if (savedRecord == null) {
-						logger.info("[ERROR Validation] Record does not validate)");
-						model.put(MainMaintenanceConstants.ASPECT_ERROR_MESSAGE, errMsg.toString());
-						model.put(MainMaintenanceConstants.DOMAIN_RECORD, recordToValidate);
-						
-						action = MainMaintenanceConstants.ACTION_CREATE;
-						
-					} else {
-						kundeSessionParams.setKundnr(savedRecord.getKundnr());
-						kundeSessionParams.setFirma(savedRecord.getFirma());
-						kundeSessionParams.setSonavn(savedRecord.getSonavn());
-						kundeSessionParams.setKnavn(savedRecord.getKnavn());
-
-						record = fetchRecord(appUser.getUser(), kundeSessionParams.getKundnr(), kundeSessionParams.getFirma());
-						//L1 -FETCH
-						this.kundfManager.fetchL1(model, appUser, record);
-						model.put(MainMaintenanceConstants.DOMAIN_RECORD, record);
-						action = MainMaintenanceConstants.ACTION_UPDATE;
-		
-					}
-					
-					
+					}else{
+						action = this.updateCundf(model, appUser, kundeSessionParams, recordToValidate, record, savedRecord, errMsg);
+					}					
 				}
 
 			} else if (MainMaintenanceConstants.ACTION_UPDATE.equals(action)) { //Update
@@ -225,6 +207,44 @@ public class MainMaintenanceCundfKundeController {
 
 	}
 	/**
+	 * 
+	 * @param model
+	 * @param appUser
+	 * @param kundeSessionParams
+	 * @param recordToValidate
+	 * @param record
+	 * @param savedRecord
+	 * @param errMsg
+	 * @return
+	 */
+	private String updateCundf(Map model, SystemaWebUser appUser, KundeSessionParams kundeSessionParams, JsonMaintMainCundfRecord recordToValidate, 
+						JsonMaintMainCundfRecord record, JsonMaintMainCundfRecord savedRecord, StringBuffer errMsg){
+		
+		String action = "";
+		savedRecord = updateRecord(appUser, recordToValidate, MainMaintenanceConstants.MODE_ADD, errMsg);
+		if (savedRecord == null) {
+			logger.info("[ERROR Validation] Record does not validate)");
+			model.put(MainMaintenanceConstants.ASPECT_ERROR_MESSAGE, errMsg.toString());
+			model.put(MainMaintenanceConstants.DOMAIN_RECORD, recordToValidate);
+			
+			action = MainMaintenanceConstants.ACTION_CREATE;
+			
+		} else {
+			kundeSessionParams.setKundnr(savedRecord.getKundnr());
+			kundeSessionParams.setFirma(savedRecord.getFirma());
+			kundeSessionParams.setSonavn(savedRecord.getSonavn());
+			kundeSessionParams.setKnavn(savedRecord.getKnavn());
+
+			record = fetchRecord(appUser.getUser(), kundeSessionParams.getKundnr(), kundeSessionParams.getFirma());
+			//L1 -FETCH
+			this.kundfManager.fetchL1(model, appUser, record);
+			model.put(MainMaintenanceConstants.DOMAIN_RECORD, record);
+			action = MainMaintenanceConstants.ACTION_UPDATE;
+
+		}
+		return action;
+	}
+	/**
 	 * Checks if the customer (at a firm level) has L1 as Master Economy System
 	 * @param appUser
 	 * @param kundeType
@@ -236,11 +256,14 @@ public class MainMaintenanceCundfKundeController {
 		//Now update the L1 record (when applicable)
 		//===========================================
 		String FAKTURAKUNDE = "F"; //adressekunder("A") skall inte ingå här
-		String L1_EXISTS = "V";
 		String ACTIVE_KUNDE = "A";
 		
-		if(L1_EXISTS.equals(appUser.getKundeL1()) && FAKTURAKUNDE.equals(recordToValidate.getKundetype()) && ACTIVE_KUNDE.equals(recordToValidate.getAktkod())){
-			retval = true;
+		//L1_EXISTS = visible in GUI for end user interaction
+		//L1_EXISTS_INVISIBLE = no GUI for end user but implicit CRUD for all CUNDF-transactions
+		if(this.L1_EXISTS_VISIBLE.equals(appUser.getKundeL1()) || this.L1_EXISTS_INVISIBLE.equals(appUser.getKundeL1())){
+				if(FAKTURAKUNDE.equals(recordToValidate.getKundetype()) && ACTIVE_KUNDE.equals(recordToValidate.getAktkod())){
+					retval = true;
+				}
 		}
 		
 		return retval;
@@ -257,9 +280,10 @@ public class MainMaintenanceCundfKundeController {
 	private JsonMaintMainKundfContainer updateL1(Map model, SystemaWebUser appUser, HttpServletRequest request, JsonMaintMainCundfRecord record){
 		JsonMaintMainKundfContainer retval = null;
 		
-		if(appUser.getKundeL1()!=null && "V".equals(appUser.getKundeL1())){
+		if(appUser.getKundeL1()!=null){
+		if( this.L1_EXISTS_VISIBLE.equals(appUser.getKundeL1()) || this.L1_EXISTS_INVISIBLE.equals(appUser.getKundeL1())){
 			JsonMaintMainKundfRecord params = this.setL1Params(request, record, appUser);
-			logger.info("###############:" + params);
+			logger.info("############### - L1PARAMS:" + params);
 			JsonMaintMainKundfContainer savedL1Record = updateRecordL1(appUser, params);
 			if(savedL1Record!=null && StringUtils.hasValue(savedL1Record.getKundnr())){
 				logger.info("############### - UPDATE L1 = SUCCESS - kundnr:" + savedL1Record.getKundnr());
@@ -267,6 +291,7 @@ public class MainMaintenanceCundfKundeController {
 			}else{
 				logger.info("############### - ERROR SEVERE on update L1:");
 			}
+		}
 		}
 		return retval;
 	}
@@ -278,7 +303,6 @@ public class MainMaintenanceCundfKundeController {
 	 * @return
 	 */
 	private JsonMaintMainKundfRecord setL1Params(HttpServletRequest request, JsonMaintMainCundfRecord recordCundf, SystemaWebUser appUser){
-		
 		JsonMaintMainKundfRecord recordL1 = new JsonMaintMainKundfRecord();
 		ModelMapper modelMapper = new ModelMapper();
 		recordL1 = modelMapper.map(recordCundf, JsonMaintMainKundfRecord.class);
@@ -290,17 +314,19 @@ public class MainMaintenanceCundfKundeController {
 			recordL1.setFirma(firma);
 		}
 		recordL1.setLand(recordCundf.getSyland());
-		//delta fields found only in L1
-		recordL1.setKundnr(request.getParameter("l1_Kundnr"));
-		recordL1.setHead(request.getParameter("l1_Head"));
-		recordL1.setKundgr(request.getParameter("l1_KundGr"));
-		recordL1.setFeks(request.getParameter("l1_Feks"));
-		recordL1.setPkod(request.getParameter("l1_Pkod"));
-		recordL1.setPgebyr(request.getParameter("l1_Pgebyr"));
-		recordL1.setDaoaar(request.getParameter("l1_DaoAar"));
-		recordL1.setDaomnd(request.getParameter("l1_DaoMnd"));
-		recordL1.setDaodag(request.getParameter("l1_DaoDag"));
-		
+		recordL1.setKundeL1(appUser.getKundeL1());
+		//delta fields found only in L1 GUI
+		if(this.L1_EXISTS_VISIBLE.equals(appUser.getKundeL1())){
+			recordL1.setKundnr(request.getParameter("l1_Kundnr"));
+			recordL1.setHead(request.getParameter("l1_Head"));
+			recordL1.setKundgr(request.getParameter("l1_KundGr"));
+			recordL1.setFeks(request.getParameter("l1_Feks"));
+			recordL1.setPkod(request.getParameter("l1_Pkod"));
+			recordL1.setPgebyr(request.getParameter("l1_Pgebyr"));
+			recordL1.setDaoaar(request.getParameter("l1_DaoAar"));
+			recordL1.setDaomnd(request.getParameter("l1_DaoMnd"));
+			recordL1.setDaodag(request.getParameter("l1_DaoDag"));
+		}
 		return recordL1;
 	}
 	
@@ -441,7 +467,7 @@ public class MainMaintenanceCundfKundeController {
 			}
 		}
 
-		logger.info("savedRecord="+ReflectionToStringBuilder.toString(savedRecord, ToStringStyle.MULTI_LINE_STYLE));
+		logger.info("savedRecord="+ReflectionToStringBuilder.toString(savedRecord, ToStringStyle.DEFAULT_STYLE));
 		if (savedRecord != null) {  
 
 			manageInvoiceEmail(appUser, record, errMsg, savedRecord);

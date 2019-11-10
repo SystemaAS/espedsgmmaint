@@ -86,7 +86,7 @@ public class KundfManager {
     	logger.info(Calendar.getInstance().getTime() +  " CGI-end timestamp");
     	if(jsonPayload!=null){
     		JsonMaintMainKundfContainer container = this.maintMainCustomerL1Service.getContainer(jsonPayload);
-    		logger.info(container);
+    		//logger.info(container);
     		if(container!=null && StringUtils.isNotEmpty(container.getKundnr())){
     			if(StringUtils.isEmpty(container.getErrMsg())){
     				retval = container;
