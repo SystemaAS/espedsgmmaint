@@ -400,5 +400,19 @@ window.addEventListener('error', function(e) {
 
 });
 
+//L1 - fields
+jq(function() {
+	jq('#l1_Feks').focus(function() {
+		if(jq('#l1_Feks').val()!=''){
+			refreshCustomValidity(jq('#l1_Feks')[0]);
+		}
+	 });
+	
+	jq('#l1_Khenv').focus(function() {
+		if(jq('#l1_Khenv').val()!=''){
+			refreshCustomValidity(jq('#l1_Khenv')[0]);
+		}
+	 });
+});
 
   

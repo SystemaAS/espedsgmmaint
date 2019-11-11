@@ -323,9 +323,12 @@ public class MainMaintenanceCundfKundeController {
 			recordL1.setFeks(request.getParameter("l1_Feks"));
 			recordL1.setPkod(request.getParameter("l1_Pkod"));
 			recordL1.setPgebyr(request.getParameter("l1_Pgebyr"));
+			recordL1.setKutdr(request.getParameter("l1_Kutdr"));
+			recordL1.setKhenv(request.getParameter("l1_Khenv"));
 			recordL1.setDaoaar(request.getParameter("l1_DaoAar"));
 			recordL1.setDaomnd(request.getParameter("l1_DaoMnd"));
 			recordL1.setDaodag(request.getParameter("l1_DaoDag"));
+			
 		}
 		return recordL1;
 	}
