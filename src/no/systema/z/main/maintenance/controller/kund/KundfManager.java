@@ -24,6 +24,8 @@ public class KundfManager {
 	private static final Logger logger = Logger.getLogger(KundfManager.class.getName());
 	private UrlCgiProxyService urlCgiProxyService;
 	private MaintMainCustomerL1Service maintMainCustomerL1Service;
+	public final static String L1_EXISTS_VISIBLE = "V";
+	public final static String L1_EXISTS_INVISIBLE = "J";
 	
 	public KundfManager( UrlCgiProxyService urlCgiProxyService, MaintMainCustomerL1Service maintMainCustomerL1Service){
 		this.urlCgiProxyService = urlCgiProxyService;
@@ -38,7 +40,7 @@ public class KundfManager {
 	 */
 	public void fetchL1(Map model, SystemaWebUser appUser, JsonMaintMainCundfRecord record){
 		//L1 -FETCH
-		if(appUser.getKundeL1()!=null && "V".equals(appUser.getKundeL1())){
+		if(appUser.getKundeL1()!=null && KundfManager.L1_EXISTS_VISIBLE.equals(appUser.getKundeL1())){
 			JsonMaintMainKundfContainer containerL1 = fetchRecordL1(appUser, record.getKundnr()); 
 			JsonMaintMainKundfRecord recordL1 = new JsonMaintMainKundfRecord();
 			if(containerL1!=null && org.apache.commons.lang3.StringUtils.isEmpty(containerL1.getKundnr())){
