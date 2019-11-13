@@ -1003,11 +1003,17 @@
 													</tr>
 													<tr>
 														
-														<td class="text14" title="l1_Head">&nbsp;Språk Header/ledetekster
+														<td class="text14" title="l1_Head">&nbsp;<spring:message code="systema.main.maintenance.mainmaintenancekundf.customer.l1_Head"/>
 															&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
 														</td>
-														<td><input type="text" class="inputTextMediumBlue" name="l1_Head" id="l1_Head" size="2" maxlength="1" value='${model.containerL1.l1_Head}'></td>
-														<td class="text14" title="l1_KundGr">&nbsp;Kundegruppe
+														<td>
+															<select name="l1_Head" id="l1_Head"  >
+																<option value=""<c:if test="${empty model.containerL1.l1_Head}"> selected </c:if>>Norsk</option>
+						 					  					<option value="E"<c:if test="${model.containerL1.l1_Head == 'E'}"> selected </c:if>>Engelsk</option>
+											  					<option value="T"<c:if test="${model.containerL1.l1_Head == 'T'}"> selected </c:if>>Tysk</option>
+											  				</select>
+														</td>
+														<td class="text14" title="l1_KundGr">&nbsp;<spring:message code="systema.main.maintenance.mainmaintenancekundf.customer.l1_KundGr"/>
 															&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
 														</td>
 														<td>
@@ -1015,9 +1021,9 @@
 														</td>
 													</tr>
 													<tr>
-														<td class="text14" title="l1_Feks">&nbsp;Ant Faktura</td>
+														<td class="text14" title="l1_Feks">&nbsp;<spring:message code="systema.main.maintenance.mainmaintenancekundf.customer.l1_Feks"/></td>
 														<td><input type="text" required oninvalid="this.setCustomValidity('Obligatoriskt')" onchange="setCustomValidity('')" onKeyPress="return numberKey(event)" class="inputTextMediumBlueMandatoryField" name="l1_Feks" id="l1_Feks" size="2" maxlength="1" value='${model.containerL1.l1_Feks}'></td>
-														<td class="text14" title="l1_Pkod">&nbsp;Purrekode</td>
+														<td class="text14" title="l1_Pkod">&nbsp;<spring:message code="systema.main.maintenance.mainmaintenancekundf.customer.l1_Pkod"/></td>
 														<td>
 															<select name="l1_Pkod" id="l1_Pkod"  >
 						 					  					<option value="J"<c:if test="${model.containerL1.l1_Pkod == 'J'}"> selected </c:if>><spring:message code="systema.yes"/></option>
@@ -1028,21 +1034,21 @@
 													</tr>
 													
 													<tr>
-														<td class="text14" title="l1_Kutdr">&nbsp;KontoUtdr.Kode</td>
+														<td class="text14" title="l1_Kutdr">&nbsp;<spring:message code="systema.main.maintenance.mainmaintenancekundf.customer.l1_Kutdr"/></td>
 														<td class="text14">
 															<select name="l1_Kutdr" id="l1_Kutdr"  >
 						 					  					<option value="J"<c:if test="${model.containerL1.l1_Kutdr == 'J'}"> selected </c:if>><spring:message code="systema.yes"/></option>
 											  					<option value=""<c:if test="${empty model.containerL1.l1_Kutdr }"> selected </c:if>><spring:message code="systema.no"/></option>
 											  				</select>		
 														</td>
-														<td class="text14" title="l1_Khenv">&nbsp;KontoHenvisning</td>
+														<td class="text14" title="l1_Khenv">&nbsp;<spring:message code="systema.main.maintenance.mainmaintenancekundf.customer.l1_Khenv"/></td>
 														<td class="text14">
 															<input type="text" required oninvalid="this.setCustomValidity('Obligatoriskt')" onchange="setCustomValidity('')" class="inputTextMediumBlueMandatoryField" name="l1_Khenv" id="l1_Khenv" size="4" maxlength="3" value='${model.containerL1.l1_Khenv}'>
 														</td>
 													</tr>
 													
 													<tr>
-														<td class="text14">&nbsp;PurreGebyr</td>
+														<td class="text14">&nbsp;<spring:message code="systema.main.maintenance.mainmaintenancekundf.customer.l1_Pgebyr"/></td>
 														<td>
 															<select name="l1_Pgebyr" id="l1_Pgebyr"  >
 						 					  					<option value="J"<c:if test="${model.containerL1.l1_Pgebyr == 'J'}"> selected </c:if>><spring:message code="systema.yes"/></option>
@@ -1051,7 +1057,7 @@
 															
 														</td>
 			
-														<td class="text14">&nbsp;Dato opprettet (År-Mnd-Dag)</td>
+														<td class="text14">&nbsp;<spring:message code="systema.main.maintenance.mainmaintenancekundf.customer.l1_DaoAll"/></td>
 														<td class="text14">								
 														    <input type="text" readonly class="inputTextReadOnly" name="l1_DaoAar" id="l1_DaoAar" size="5" value='${model.containerL1.l1_DaoAar}'>
 														    <input type="text" readonly class="inputTextReadOnly" name="l1_DaoMnd" id="l1_DaoMnd" size="3" value='${model.containerL1.l1_DaoMnd}'>

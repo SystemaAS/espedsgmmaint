@@ -5,6 +5,8 @@ import java.util.Calendar;
 import java.util.Collection;
 import java.util.Map;
 
+import javax.servlet.http.HttpServletRequest;
+
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 import org.modelmapper.ModelMapper;
@@ -26,6 +28,8 @@ public class KundfManager {
 	private MaintMainCustomerL1Service maintMainCustomerL1Service;
 	public final static String L1_EXISTS_VISIBLE = "V";
 	public final static String L1_EXISTS_INVISIBLE = "J";
+	public final static String TRANSACTION_UPDATE = "doUpdate";
+	public final static String TRANSACTION_CREATE = "doCreate";
 	
 	public KundfManager( UrlCgiProxyService urlCgiProxyService, MaintMainCustomerL1Service maintMainCustomerL1Service){
 		this.urlCgiProxyService = urlCgiProxyService;
@@ -100,5 +104,33 @@ public class KundfManager {
     		}
     	}		
 		return retval;
+	}
+	/**
+	 * Used in every failed validation before "SAVE"
+	 *  
+	 * @param model
+	 * @param request
+	 * @param recordToValidate
+	 * @param appUser
+	 */
+	public void rescueL1Params(Map model, HttpServletRequest request, JsonMaintMainCundfRecord recordToValidate, SystemaWebUser appUser){
+		JsonMaintMainKundfContainer containerL1 = new JsonMaintMainKundfContainer();
+		
+		containerL1.setKundnr(request.getParameter("l1_Kundnr"));
+		containerL1.setL1_Kundnr(request.getParameter("l1_Kundnr"));
+		containerL1.setL1_Feks(request.getParameter("l1_Feks"));
+		containerL1.setL1_Head(request.getParameter("l1_Head"));
+		containerL1.setL1_Khenv(request.getParameter("l1_Khenv"));
+		containerL1.setL1_KundGr(request.getParameter("l1_KundGr"));
+		containerL1.setL1_Kundnr(request.getParameter("l1_Kundnr"));
+		containerL1.setL1_Kutdr(request.getParameter("l1_Kutdr"));
+		containerL1.setL1_Pgebyr(request.getParameter("l1_Pgebyr"));
+		containerL1.setL1_Pkod(request.getParameter("l1_Pkod"));
+		//
+		containerL1.setL1_DaoAar(request.getParameter("l1_DaoAar"));
+		containerL1.setL1_DaoMnd(request.getParameter("l1_DaoMnd"));
+		containerL1.setL1_DaoDag(request.getParameter("l1_DaoDag"));
+		
+		model.put(MainMaintenanceConstants.DOMAIN_CONTAINER_L1, containerL1);
 	}
 }

@@ -106,19 +106,30 @@ public class MainMaintenanceCundfKundeController {
 					logger.info("[ERROR Validation] Record does not validate)");
 					model.put(MainMaintenanceConstants.DOMAIN_RECORD, recordToValidate);
 					action = MainMaintenanceConstants.ACTION_CREATE;
+					//Rescue L1 fields
+					if(this.isValidL1(appUser, recordToValidate, KundfManager.TRANSACTION_CREATE)){
+						this.kundfManager.rescueL1Params(model, request, recordToValidate, appUser);
+					}
 					 
 				} else {
 					//===========================================
 					//Now update the L1 record (when applicable)
 					//===========================================
-					if(this.isValidL1(appUser, recordToValidate)){
+					if(this.isValidL1(appUser, recordToValidate, KundfManager.TRANSACTION_CREATE)){
 						JsonMaintMainKundfContainer savedL1Record = this.updateL1(model, appUser, request, recordToValidate);
 						if(savedL1Record!=null){
 							recordToValidate.setKundnr(savedL1Record.getKundnr());
 							logger.info("handover to recordToValidate OK");
 							//proceed with cundf create
+							//DELETE L1 is not possible according to JOVO. This means that if Cundf- fails then there will be an L1-"lost in translation"
+							//Don't blame me ...
 							action = this.updateCundfAndFetchKundf(model, appUser, kundeSessionParams, recordToValidate, record, savedRecord, errMsg);
 							
+							if(errMsg!=null && !"".equals(errMsg.toString())){
+								recordToValidate.setKundnr("");
+								savedL1Record.setKundnr("");
+								model.put(MainMaintenanceConstants.DOMAIN_CONTAINER_L1, savedL1Record);
+							}
 						}	
 					}else{
 						action = this.updateCundfAndFetchKundf(model, appUser, kundeSessionParams, recordToValidate, record, savedRecord, errMsg);
@@ -137,6 +148,11 @@ public class MainMaintenanceCundfKundeController {
 				if (bindingResult.hasErrors()) {
 					logger.error("[ERROR Validation] Record does not validate)");
 					model.put(MainMaintenanceConstants.DOMAIN_RECORD, recordToValidate);
+					//Rescue L1 fields
+					if(this.isValidL1(appUser, recordToValidate,KundfManager.TRANSACTION_UPDATE)){
+						this.kundfManager.rescueL1Params(model, request, recordToValidate, appUser);
+					}
+					
 				} else {
 					
 					savedRecord = updateRecord(appUser, recordToValidate, MainMaintenanceConstants.MODE_UPDATE, errMsg);
@@ -144,11 +160,19 @@ public class MainMaintenanceCundfKundeController {
 						logger.error("[ERROR Update] Record could not be updated, errMsg="+errMsg.toString());
 						model.put(MainMaintenanceConstants.ASPECT_ERROR_MESSAGE, errMsg.toString());
 						model.put(MainMaintenanceConstants.DOMAIN_RECORD, recordToValidate);
+						//Rescue L1 fields
+						if(this.isValidL1(appUser, recordToValidate, KundfManager.TRANSACTION_UPDATE)){
+							this.kundfManager.rescueL1Params(model, request, recordToValidate, appUser);
+						}
 					} else if (StringUtils.hasValue(errMsg.toString())){
 						logger.error("[ERROR Update] Record could not be updated, errMsg="+errMsg.toString());
 						model.put(MainMaintenanceConstants.ASPECT_ERROR_MESSAGE, errMsg.toString());
 						record = this.fetchRecord(appUser.getUser(), kundeSessionParams.getKundnr(), kundeSessionParams.getFirma());
 						model.put(MainMaintenanceConstants.DOMAIN_RECORD, record);
+						//Rescue L1 fields
+						if(this.isValidL1(appUser, recordToValidate, KundfManager.TRANSACTION_UPDATE)){
+							this.kundfManager.rescueL1Params(model, request, recordToValidate, appUser);
+						}
 					} else {
 						record = this.fetchRecord(appUser.getUser(), kundeSessionParams.getKundnr(), kundeSessionParams.getFirma());
 						model.put(MainMaintenanceConstants.DOMAIN_RECORD, record);
@@ -197,6 +221,10 @@ public class MainMaintenanceCundfKundeController {
 			String errorMessage = "Teknisk feil. Kontakt helpdesk. Error:"+e;
 			model.put(MainMaintenanceConstants.DOMAIN_RECORD, recordToValidate);
 			model.put(MainMaintenanceConstants.ASPECT_ERROR_MESSAGE, errorMessage);
+			//Rescue L1 fields
+			if(this.isValidL1(appUser, recordToValidate, null)){
+				this.kundfManager.rescueL1Params(model, request, recordToValidate, appUser);
+			}
 			successView.addObject(MainMaintenanceConstants.DOMAIN_MODEL, model);
 			successView.addObject("tab_knavn_display", VkundControllerUtil.getTrimmedKnav(recordToValidate.getKnavn()));
 			
@@ -225,7 +253,8 @@ public class MainMaintenanceCundfKundeController {
 			logger.info("[ERROR Validation] Record does not validate)");
 			model.put(MainMaintenanceConstants.ASPECT_ERROR_MESSAGE, errMsg.toString());
 			model.put(MainMaintenanceConstants.DOMAIN_RECORD, recordToValidate);
-			
+			//L1 -FETCH
+			this.kundfManager.fetchL1(model, appUser, recordToValidate);
 			action = MainMaintenanceConstants.ACTION_CREATE;
 			
 		} else {
@@ -249,7 +278,7 @@ public class MainMaintenanceCundfKundeController {
 	 * @param kundeType
 	 * @return
 	 */
-	private boolean isValidL1(SystemaWebUser appUser, JsonMaintMainCundfRecord recordToValidate){
+	private boolean isValidL1(SystemaWebUser appUser, JsonMaintMainCundfRecord recordToValidate, String transactionType){
 		boolean retval = false;
 		//===========================================
 		//Now update the L1 record (when applicable)
@@ -260,13 +289,25 @@ public class MainMaintenanceCundfKundeController {
 		//L1_EXISTS = visible in GUI for end user interaction
 		//L1_EXISTS_INVISIBLE = no GUI for end user but implicit CRUD for all CUNDF-transactions
 		if(KundfManager.L1_EXISTS_VISIBLE.equals(appUser.getKundeL1()) || KundfManager.L1_EXISTS_INVISIBLE.equals(appUser.getKundeL1())){
+			if(KundfManager.TRANSACTION_CREATE.equals(transactionType)){
 				if(FAKTURAKUNDE.equals(recordToValidate.getKundetype()) && ACTIVE_KUNDE.equals(recordToValidate.getAktkod())){
 					retval = true;
 				}
+			}else if(KundfManager.TRANSACTION_UPDATE.equals(transactionType)){
+				if(ACTIVE_KUNDE.equals(recordToValidate.getAktkod())){
+					retval = true;
+				}
+			}else{
+				if(transactionType!=null){
+					//could be a "doFetch"
+					retval = true;
+				}
+			}
 		}
 		
 		return retval;
 	}
+	
 	
 	/**
 	 * 
@@ -286,7 +327,7 @@ public class MainMaintenanceCundfKundeController {
 				logger.info("############### - L1PARAMS:" + params);
 				JsonMaintMainKundfContainer savedL1Record = updateRecordL1(appUser, params);
 				if(savedL1Record!=null && StringUtils.hasValue(savedL1Record.getKundnr())){
-					logger.info("############### - UPDATE L1 = SUCCESS - kundnr:" + savedL1Record.getKundnr());
+					logger.info("############### - CREATE NEW/UPDATE L1 = SUCCESS --> L1-kundnr:" + savedL1Record.getKundnr());
 					retval = savedL1Record;
 				}else{
 					logger.info("############### - ERROR SEVERE on update L1:");
@@ -295,6 +336,7 @@ public class MainMaintenanceCundfKundeController {
 		}
 		return retval;
 	}
+	
 	
 	/**
 	 * transfer object before update
