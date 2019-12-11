@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.SessionAttributes;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.CookieValue;
 import org.springframework.web.bind.annotation.InitBinder;
 import org.springframework.web.servlet.view.RedirectView;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
@@ -24,6 +25,7 @@ import org.springframework.beans.factory.annotation.Required;
 import org.springframework.context.annotation.Scope;
 
 import javax.servlet.RequestDispatcher;
+import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
@@ -35,7 +37,7 @@ import org.springframework.validation.BindingResult;
 
 //import no.systema.tds.service.MainHdTopicService;
 import no.systema.main.validator.UserValidator;
-
+import no.systema.main.cookie.SessionCookieManager;
 //application imports
 import no.systema.main.model.SystemaWebUser;
 import no.systema.main.model.jsonjackson.JsonSystemaUserContainer;
@@ -52,6 +54,7 @@ import no.systema.main.service.FirmLoginService;
 import no.systema.main.url.store.MainUrlDataStore;
 import no.systema.main.util.AppConstants;
 import no.systema.jservices.common.util.AesEncryptionDecryptionManager;
+import no.systema.jservices.common.util.StringUtils;
 
 
 
@@ -69,8 +72,8 @@ public class DashboardController {
 	private static final Logger logger = Logger.getLogger(DashboardController.class.getName());
 	private final String COMPANY_CODE_REQUIRED_FLAG_VALUE = "1";
 	private AesEncryptionDecryptionManager aesManager = new AesEncryptionDecryptionManager();
-	
 	private ModelAndView loginView = new ModelAndView("redirect:logout.do");
+	
 	
 	@InitBinder
     protected void initBinder(WebDataBinder binder) {
@@ -91,11 +94,25 @@ public class DashboardController {
 	 * @param request
 	 * @return
 	 */
-	@RequestMapping(value="logonDashboard.do", method= { RequestMethod.POST})
-	public ModelAndView logon(@ModelAttribute (AppConstants.SYSTEMA_WEB_USER_KEY) SystemaWebUser appUser, BindingResult bindingResult, HttpSession session, HttpServletRequest request, HttpServletResponse response, RedirectAttributes redirectAttr){
+	@RequestMapping(value="logonDashboard.do", method= { RequestMethod.POST })
+	public ModelAndView logon(@ModelAttribute (AppConstants.SYSTEMA_WEB_USER_KEY) SystemaWebUser appUser, BindingResult bindingResult, HttpSession session, HttpServletRequest request, 
+		HttpServletResponse response, RedirectAttributes redirectAttr){
 		ModelAndView successView = new ModelAndView("redirect:mainmaintenancegate.do?action=doFind");
 		Map model = new HashMap();
+		SessionCookieManager cookieMgr = new SessionCookieManager();
 		
+		//Init cookie token since this page is excluded in the interceptor
+		cookieMgr.removeLocalCookie(response);
+		
+		//Encrypt user credentials as late as possible
+		appUser.setEncryptedUser(appUser.getUser());
+		appUser.setUser(this.aesManager.decrypt(appUser.getUser()));
+		appUser.setEncryptedPassword(appUser.getPassword());
+    	appUser.setPassword(this.aesManager.decrypt(appUser.getPassword()));
+		appUser.setEncryptedToken(this.aesManager.encrypt(request.getSession().getId() + "&" + appUser.getUser()));
+    	
+    	
+		logger.warn("A");
 		if(appUser==null){
 			return this.loginView;
 		
@@ -118,11 +135,6 @@ public class DashboardController {
 		    	return loginView;
 	
 		    }else{
-		    	//Decrypt password to be able to work with it. 
-		    	//All sub-modules will be passed an encrypted password (from the dashboard). ALWAYS!
-		    	appUser.setEncryptedPassword(appUser.getPassword());
-		    	appUser.setPassword(this.aesManager.decrypt(appUser.getPassword()));
-		    	//logger.info("DECRYPT...:" + appUser.getPassword());
 		    	
 		    	//get the company code for the comming user
 		    	//this routine was triggered by Totens upgrade (Jan-2017 V12). Ref. JOVOs requirement
@@ -181,6 +193,9 @@ public class DashboardController {
 	    					return loginView;
 				    	}
 				    	
+				    	
+						//create cookie for security token
+				    	cookieMgr.addLocalCookieToken( appUser.getEncryptedToken(), response);
 				    	session.setAttribute(AppConstants.SYSTEMA_WEB_USER_KEY, appUser);
 				    	
 			    	}catch(Exception e){
@@ -202,10 +217,12 @@ public class DashboardController {
 			    	if(appUser.getTomcatPort()!=null && !"".equals(appUser.getTomcatPort())){
 				    	String urlRedirectTomcatToSubsidiaryCompany = this.getTomcatServerRedirectionUrl(appUser, request);
 				    	RedirectView rw = new RedirectView();
-				    	logger.info("Redirecting to:" + urlRedirectTomcatToSubsidiaryCompany);
+				    	logger.warn("Redirecting to lognWRedDashboard");
+				    	logger.debug("Redirecting to:" + urlRedirectTomcatToSubsidiaryCompany);
 				    	rw.setUrl(urlRedirectTomcatToSubsidiaryCompany);
 				    	successView = new ModelAndView(rw);
 			    	}
+			    	
 			    	
 			    	return successView;
 		    }
@@ -224,14 +241,16 @@ public class DashboardController {
 	 * @return
 	 */
 	@RequestMapping(value="logonWRedDashboard.do", method= { RequestMethod.POST, RequestMethod.GET})
-	public ModelAndView logonRedirected(RedirectAttributes redirectAttrs, Model modelX, @ModelAttribute (AppConstants.SYSTEMA_WEB_USER_KEY) SystemaWebUser appUser, HttpSession session, HttpServletRequest request, HttpServletResponse response){
+	public ModelAndView logonRedirected( @ModelAttribute (AppConstants.SYSTEMA_WEB_USER_KEY) SystemaWebUser appUser, HttpSession session, HttpServletRequest request, HttpServletResponse response){
 		ModelAndView successView = new ModelAndView("redirect:mainmaintenancegate.do?action=doFind");
 		Map model = new HashMap();
 		
 		String user = request.getParameter("ru");
 		String pwd = request.getParameter("dp");
+		
 		//set attributes since the method call do not uses those fields' names
-		appUser.setUser(user);
+		appUser.setEncryptedUser(user);
+		appUser.setUser(this.aesManager.decrypt(user));
 		appUser.setEncryptedPassword(pwd);
 		appUser.setPassword(this.aesManager.decrypt(pwd));
 		
@@ -262,7 +281,7 @@ public class DashboardController {
 		    	//int pwd = urlRequestParamsKeys.indexOf("&pwd");
 		    	//String credentailsPwd = urlRequestParamsKeys.substring(pwd + 5);
 		    	//logger.info("URL PARAMS: " + urlRequestParamsKeys.substring(0,pwd)+"&md5");
-		    	logger.info("URL PARAMS: " + urlRequestParamsKeys);
+		    	logger.debug("URL PARAMS: " + urlRequestParamsKeys);
 		    	
 		    	//--------------------------------------
 		    	//EXECUTE the FETCH (RPG program) here
@@ -297,8 +316,7 @@ public class DashboardController {
 					
 						return loginView;
 			    	}
-			    	//Encrypt the password so late as possible
-			    	//appUser.setEncryptedPassword(this.aesManager.encrypt(appUser.getPassword()));
+			    	
 			    	session.setAttribute(AppConstants.SYSTEMA_WEB_USER_KEY, appUser);
 			    	
 		    	}catch(Exception e){
@@ -366,7 +384,7 @@ public class DashboardController {
 		
 		//We must user GET until we get Spring 4 (in order to send params on POST)
 		try{
-			retval = hostRaw + request.getContextPath() + "/logonWRedDashboard.do?" + "ru=" + appUser.getUser() + "&dp=" + URLEncoder.encode(appUser.getEncryptedPassword(), "UTF-8");
+			retval = hostRaw + request.getContextPath() + "/logonWRedDashboard.do?" + "ru=" + URLEncoder.encode(appUser.getEncryptedUser(), "UTF-8") + "&dp=" + URLEncoder.encode(appUser.getEncryptedPassword(), "UTF-8");
 		}catch(Exception e){
 			//logger.info("XXXXX:" + request.getContextPath());
 		}
