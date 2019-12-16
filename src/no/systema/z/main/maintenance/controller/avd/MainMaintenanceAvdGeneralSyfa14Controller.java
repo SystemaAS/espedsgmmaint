@@ -1,10 +1,13 @@
 package no.systema.z.main.maintenance.controller.avd;
 
+import java.net.URLEncoder;
 import java.util.*;
 
+import org.apache.commons.lang3.StringEscapeUtils;
 import org.apache.log4j.Logger;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.servlet.ModelAndView;
+import org.springframework.web.util.HtmlUtils;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.ServletRequestDataBinder;
 import org.springframework.web.bind.annotation.ModelAttribute;
@@ -108,8 +111,7 @@ public class MainMaintenanceAvdGeneralSyfa14Controller {
 		String avd = request.getParameter("avd");
 		String action = request.getParameter("action");
 		String updateId = request.getParameter("updateId");
-		
-		
+		logger.warn("Inside controller:" + recordToValidate.getKoanvn());
 		if(appUser==null){
 			return this.loginView;
 		}else{
@@ -210,6 +212,11 @@ public class MainMaintenanceAvdGeneralSyfa14Controller {
 				if(avd!=null && !"".equals(avd)){
 					//get record including children records (listehode & oppdnrTur)
 					record = this.fetchRecord(appUser.getUser(), avd);
+					//escape http output entity (WTG - PenTest - E7)
+					//record.setKoanvn(StringEscapeUtils.escapeHtml4(record.getKoanvn()));
+					//TEST String output = StringEscapeUtils.escapeHtml4("The less than sign (<) and ampersand (&) must be escaped before using them in HTML");
+					//TEST logger.warn(output);
+					logger.warn(record.getKoanvn());
 					
 					//check if fastedate exists
 					JsonMaintMainKodtvKodtwRecord recordFasteData = this.maintMainKodtvKodtwService.fetchRecord(appUser.getUser(), avd);
@@ -287,6 +294,7 @@ public class MainMaintenanceAvdGeneralSyfa14Controller {
     		JsonMaintMainKodtaContainer container = this.maintMainKodtaService.getList(jsonPayload);
 	        if(container!=null){
 	        	list = (List)container.getList();
+	        	
 	        }
     	}
     	return list;
@@ -320,6 +328,7 @@ public class MainMaintenanceAvdGeneralSyfa14Controller {
 	        if(container!=null){
 	        	list = (List)container.getList();
 	        	for(JsonMaintMainKodtaRecord tmp : list){
+	        		
 	        		record = tmp;
 	        	}
 	        }

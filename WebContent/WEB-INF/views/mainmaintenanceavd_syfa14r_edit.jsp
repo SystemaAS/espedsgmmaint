@@ -169,7 +169,7 @@
 	 	    <tr>
 				<td width="5%">&nbsp;</td>
 				<td width="100%">
-					<form action="mainmaintenanceavd_syfa14r_edit.do" name="formRecord" id="formRecord" method="POST" >
+					<form action="mainmaintenanceavd_syfa14r_edit.do" name="formRecord" id="formRecord" method="POST"  >
 						<input type="hidden" name="applicationUser" id="applicationUser" value="${user.user}">
 						<input type="hidden" name="updateId" id=updateId value="${model.updateId}">
 						<input type="hidden" name="action" id=action value="${model.action}">
@@ -192,7 +192,7 @@
 										</c:otherwise>
 									</c:choose>
 								</td>
-								<td ><input type="text" class="inputTextMediumBlueMandatoryField" name="koanvn" id="koanvn" size="35" maxlength="33" value='${model.record.koanvn}'></td>
+								<td ><input type="text" class="inputTextMediumBlueMandatoryField" name="koanvn" id="koanvn" size="35" maxlength="33" value='<c:out value="${model.record.koanvn}"/>'></td>
 								<td ><input readonly type="text" class="inputTextReadOnly" name="koafir" id="koafir" size="30" maxlength="59" value='${model.record.koafir}'></td>
 								<td >
 									<input onKeyPress="return numberKey(event)" type="text" class="inputTextMediumBlueMandatoryField" name="koaknr" id="koaknr" size="9" maxlength="8" value='${model.record.koaknr}'>
