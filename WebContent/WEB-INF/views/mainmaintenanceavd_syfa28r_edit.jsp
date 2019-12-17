@@ -55,7 +55,7 @@
 					</td>
 					<td width="1px" class="tabFantomSpace" align="center" nowrap><font class="tabDisabledLink">&nbsp;</font></td>
 					<td width="12%" valign="bottom" class="tabDisabled" align="center">
-						<a id="alinkAvdHodeDok" onClick="setBlockUI(this);" href="mainmaintenanceavd_syfa63r.do?avd=${model.avd}&avdnavn=${model.avdnavn}">
+						<a id="alinkAvdHodeDok" onClick="setBlockUI(this);" href="mainmaintenanceavd_syfa63r.do?avd=${model.avd}&avdnavn=<c:out value="${model.avdnavn}"/>">
 							<font class="tabDisabledLink">&nbsp;Hode på dok.</font>&nbsp;
 							<font class="text12MediumBlue">(${model.avd})</font>
 						</a>
@@ -144,14 +144,14 @@
 						<input type="hidden" name="action" id=action value="${model.action}">
 						<input type="hidden" name="avd" id="avd" value="${model.avd}">
 						<input type="hidden" name="kovavd" id="kovavd" value="${model.record.kovavd}">
-						<input type="hidden" name="avdnavn" id=avdnavn value="${model.avdnavn}">
+						<input type="hidden" name="avdnavn" id=avdnavn value="<c:out value="${model.avdnavn}"/>">
 						
 						<table width="99%" 	cellspacing="1" border="0" align="left">
 							<tr>
 								<td valign="top" width="90%">
 									<table	cellspacing="1" border="0" align="left">
 										<tr >
-											<td colspan="4" class="text14MediumBlue" title=".">Avd.navn&nbsp;&nbsp;&nbsp;<input readonly class="inputTextReadOnly" type="text" size="40" value="${model.avdnavn}">
+											<td colspan="4" class="text14MediumBlue" title=".">Avd.navn&nbsp;&nbsp;&nbsp;<input readonly class="inputTextReadOnly" type="text" size="40" value="<c:out value="${model.avdnavn}"/>" >
 											</td>
 										</tr>
 										<tr height="5"><td >&nbsp;</td></tr>
@@ -593,11 +593,11 @@
 				               		</a>
 				               </td>
 				               <td width="2%" class="tableCell" style="border-style: solid;border-width: 0px 1px 1px 0px;border-color:#FAEBD7;" align="center">${childRecord.koplnr}</td>
-				               <td width="25%" class="tableCell" style="border-style: solid;border-width: 0px 1px 1px 1px;border-color:#FAEBD7;">&nbsp;${childRecord.utptxt}&nbsp;</td>
+				               <td width="25%" class="tableCell" style="border-style: solid;border-width: 0px 1px 1px 1px;border-color:#FAEBD7;">&nbsp;<c:out value="${childRecord.utptxt}"/>&nbsp;</td>
 				               <td class="tableCell" style="border-style: solid;border-width: 0px 1px 1px 0px;border-color:#FAEBD7;" >&nbsp;${childRecord.kopty}&nbsp;</td>
 		                       <td class="tableCell" style="border-style: solid;border-width: 0px 1px 1px 0px;border-color:#FAEBD7;" >&nbsp;${childRecord.utpl}&nbsp;</td>
 		                       <td class="tableCell" style="border-style: solid;border-width: 0px 1px 1px 0px;border-color:#FAEBD7;" >&nbsp;${childRecord.utpk}&nbsp;</td>
-		                       <td class="tableCell" style="border-style: solid;border-width: 0px 1px 1px 0px;border-color:#FAEBD7;" >&nbsp;${childRecord.kopnvn}&nbsp;</td>
+		                       <td class="tableCell" style="border-style: solid;border-width: 0px 1px 1px 0px;border-color:#FAEBD7;" >&nbsp;<c:out value="${childRecord.kopnvn}"/>&nbsp;</td>
 		                       <td class="tableCell" style="border-style: solid;border-width: 0px 1px 1px 0px;border-color:#FAEBD7;" >&nbsp;${childRecord.kophea}</td>
 		                       <td class="tableCell" style="border-style: solid;border-width: 0px 1px 1px 0px;border-color:#FAEBD7;" align="center">&nbsp;${childRecord.koplas}&nbsp;</td>
 		                       <td class="tableCell" style="border-style: solid;border-width: 0px 1px 1px 0px;border-color:#FAEBD7;" align="center">&nbsp;${childRecord.koplpi}&nbsp;</td>
@@ -614,7 +614,7 @@
 										 	<input type="hidden" name="action${counter.count}" id="action${counter.count}" value='doUpdate'/>
 											<input type="hidden" name="originalAvd${counter.count}" id="originalAvd${counter.count}" value='${childRecord.kopavd}'/>
 						 					<input type="hidden" name="originalLnr${counter.count}" id="originalLnr${counter.count}" value='${childRecord.koplnr}'/>
-						 					<input type="hidden" name="oAvdNavn${counter.count}" id="oAvdNavn${counter.count}" value='${ model.avdnavn }'/>
+						 					<input type="hidden" name="oAvdNavn${counter.count}" id="oAvdNavn${counter.count}" value="<c:out value="${ model.avdnavn }"/>"/>
 						 						
 											<p class="text14" ><b>Kopier printerstyring til andre avd</b></p>
 											<p class="text14" >Printerstyring (inkludert stringkoder) kopieres fra gjeldende avdeling til alle avd angitt under.</p>

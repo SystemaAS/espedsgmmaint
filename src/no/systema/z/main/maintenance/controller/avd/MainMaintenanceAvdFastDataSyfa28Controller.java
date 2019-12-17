@@ -81,7 +81,7 @@ public class MainMaintenanceAvdFastDataSyfa28Controller {
 		}else{
 			logger.info("Inside method: mainmaintenanceavd_syfa28r_edit");
 			logger.info("avd" + avd);
-			logger.info("avdnavn" + avdNavn);
+			logger.warn("avdnavn" + avdNavn);
 			logger.info("action" + action);
 		
 			//--------------

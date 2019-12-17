@@ -76,7 +76,7 @@
 			               <td style="cursor:pointer;" class="text14MediumBlue" id="avd${record.koaavd}@ctype${model.ctype}" >
 			               		<img title="select" style="vertical-align:top;" src="resources/images/bebullet.gif" border="0" alt="edit">&nbsp;${record.koaavd}
 			               	</td>
-		               	   <td class="text14">&nbsp;${record.koanvn}</td>
+		               	   <td class="text14">&nbsp;<c:out value="${record.koanvn}"/></td>
 		               	   <td class="text14">&nbsp;${record.koafir}</td>
 		               	   <td class="text14">&nbsp;${record.koaknr}</td>
 		               	    

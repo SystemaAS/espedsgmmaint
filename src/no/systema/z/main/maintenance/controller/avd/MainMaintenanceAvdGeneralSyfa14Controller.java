@@ -213,7 +213,7 @@ public class MainMaintenanceAvdGeneralSyfa14Controller {
 					//get record including children records (listehode & oppdnrTur)
 					record = this.fetchRecord(appUser.getUser(), avd);
 					//escape http output entity (WTG - PenTest - E7)
-					//record.setKoanvn(StringEscapeUtils.escapeHtml4(record.getKoanvn()));
+					//-->c:out in JSTL instead of -->> record.setKoanvn(StringEscapeUtils.escapeHtml4(record.getKoanvn()));
 					//TEST String output = StringEscapeUtils.escapeHtml4("The less than sign (<) and ampersand (&) must be escaped before using them in HTML");
 					//TEST logger.warn(output);
 					logger.warn(record.getKoanvn());
