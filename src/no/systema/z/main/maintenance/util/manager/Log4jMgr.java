@@ -15,7 +15,6 @@ import org.apache.log4j.Logger;
 import org.apache.log4j.PropertyConfigurator;
 
 import no.systema.main.context.TdsServletContext;
-import no.systema.main.controller.GeneralTextRenderController;
 
 public class Log4jMgr {
 
