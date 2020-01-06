@@ -193,7 +193,6 @@ public class DashboardController {
 	    					return loginView;
 				    	}
 				    	
-				    	
 						//create cookie for security token
 				    	cookieMgr.addLocalCookieToken( appUser.getEncryptedToken(), response);
 				    	session.setAttribute(AppConstants.SYSTEMA_WEB_USER_KEY, appUser);
