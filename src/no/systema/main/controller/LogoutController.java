@@ -41,7 +41,7 @@ public class LogoutController {
 			Log4jMgr log4jMgr = new Log4jMgr();
 			log4jMgr.doLogoutLogger();
 			//remove token cookie (init)
-			new SessionCookieManager().removeLocalCookie(response);
+			new SessionCookieManager(request).removeLocalCookie(response);
 			
 			//go on
             session.removeAttribute(AppConstants.SYSTEMA_WEB_USER_KEY);

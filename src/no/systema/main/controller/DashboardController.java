@@ -99,7 +99,7 @@ public class DashboardController {
 		HttpServletResponse response, RedirectAttributes redirectAttr){
 		ModelAndView successView = new ModelAndView("redirect:mainmaintenancegate.do?action=doFind");
 		Map model = new HashMap();
-		SessionCookieManager cookieMgr = new SessionCookieManager();
+		SessionCookieManager cookieMgr = new SessionCookieManager(request);
 		
 		//Init cookie token since this page is excluded in the interceptor
 		cookieMgr.removeLocalCookie(response);
