@@ -45,11 +45,7 @@
 							<tr>
 								<th width="2%" class="tableHeaderField" align="center" >&nbsp;<spring:message code="systema.main.maintenance.main.gate.edit"/></th>
 			                    <th width="80%" class="tableHeaderField" align="left" >&nbsp;<spring:message code="systema.main.maintenance.main.gate.description"/>&nbsp;</th>
-			                    <%--
-			                    <th class="tableHeaderField" align="left" >&nbsp;<spring:message code="systema.main.maintenance.main.gate.code"/>&nbsp;</th>
-								<th class="tableHeaderField" align="left" >&nbsp;<spring:message code="systema.main.maintenance.main.gate.text"/>&nbsp;</th>
-			                    <th class="tableHeaderField" align="center" >&nbsp;<spring:message code="systema.main.maintenance.main.gate.status"/>&nbsp;</th>
-			                     --%>
+			                    
 			                </tr>  
 			                </thead> 
 			                <tbody >  
@@ -80,21 +76,7 @@
 					               		</c:otherwise>
 				               		</c:choose>
 				               </td>
-				               <%--
-		                       <td class="tableCell" style="border-style: solid;border-width: 0px 1px 1px 0px;border-color:#FAEBD7;" ><font class="text12">&nbsp;${record.code}&nbsp;</font></td>
-				               <td class="tableCell" style="border-style: solid;border-width: 0px 1px 1px 0px;border-color:#FAEBD7;" ><font class="text12">&nbsp;${record.text}&nbsp;</font></td>
-		                       <td class="tableCell" style="border-style: solid;border-width: 0px 1px 1px 0px;border-color:#FAEBD7;"align="center">
-		                       		<c:if test="${empty record.status}">
-	                       				<img src="resources/images/bulletRed.png" width="12px" height="12px" border="0">
-		                       		</c:if>
-		                       		<c:if test="${record.status == 'G'}">
-		                       			<img src="resources/images/bulletGreen.png" width="12px" height="12px" border="0">
-		                       		</c:if>
-		                       		<c:if test="${record.status == 'Y'}">
-		                       			<img src="resources/images/bulletYellowModern.png" width="11px" height="11px" border="0">
-		                       		</c:if>
-				              </td>
-				               --%>
+				               
 				            </tr> 
 				            </c:forEach>
 				            </tbody>

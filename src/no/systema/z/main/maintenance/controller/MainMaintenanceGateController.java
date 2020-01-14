@@ -18,7 +18,9 @@ import no.systema.main.service.UrlCgiProxyService;
 
 //application imports
 import no.systema.main.model.SystemaWebUser;
+import no.systema.main.model.jsonjackson.JsonSystemaUserRecord;
 import no.systema.main.util.AppConstants;
+import no.systema.main.util.StringManager;
 //models
 import no.systema.z.main.maintenance.model.MainMaintenanceMainListObject;
 import no.systema.z.main.maintenance.util.MainMaintenanceConstants;
@@ -43,7 +45,8 @@ public class MainMaintenanceGateController {
 	private final String LANGUAGE_CODE_SWEDEN = "SV";
 	private final String LANGUAGE_CODE_DENMARK = "DA";
 	private MessageSourceHelper messageSourceHelper = null;
-	
+	private StringManager strMgr = new StringManager();
+	private String TOMCAT_KUNDE_RESTRICTED = "TOMCAT-RESTRICTED-VEDLIKEHOLD-KUNDE";
 	/**
 	 * 
 	 * @param user
@@ -70,7 +73,12 @@ public class MainMaintenanceGateController {
 			appUser.setActiveMenu(SystemaWebUser.ACTIVE_MENU_MAIN_MAINTENANCE);
 			session.setAttribute(MainMaintenanceConstants.ACTIVE_URL_RPG_MAIN_MAINTENANCE, MainMaintenanceConstants.ACTIVE_URL_RPG_INITVALUE); 
 			
-			List list = this.populateMaintenanceMainList(appUser);
+			List list = null;
+			if(menuKundeRestrictedExists(appUser)){		
+				list = this.populateMaintenanceMainListRestrictedKunde(appUser);
+			}else{
+				list = this.populateMaintenanceMainList(appUser);
+			}
 			//this.populateAvdelningHtmlDropDownsFromJsonString(model, appUser);
 			//this.populateSignatureHtmlDropDownsFromJsonString(model, appUser);
 			//this.setCodeDropDownMgr(appUser, model);
@@ -86,6 +94,23 @@ public class MainMaintenanceGateController {
 			return successView;
 			
 		}
+	}
+	/**
+	 * 
+	 * @param appUser
+	 * @return
+	 */
+	private boolean menuKundeRestrictedExists(SystemaWebUser appUser){
+		boolean retval = false;
+		if(appUser.getMenuList()!=null){
+			for(JsonSystemaUserRecord module: appUser.getMenuList()){
+				if(module.getProg().toUpperCase().contains(TOMCAT_KUNDE_RESTRICTED)){
+					retval = true;
+				}
+			}
+		}
+		
+		return retval;
 	}
 
 	/**
@@ -169,6 +194,29 @@ public class MainMaintenanceGateController {
 		object.setDbTable("BRIDF");
 		listObject.add(object);		
 		*/
+		return listObject;
+	}
+	
+	/**
+	 * Restricted menu kundereg.
+	 * @param appUser
+	 * @return
+	 */
+	private List<MainMaintenanceMainListObject> populateMaintenanceMainListRestrictedKunde(SystemaWebUser appUser ){
+		List<MainMaintenanceMainListObject> listObject = new ArrayList<MainMaintenanceMainListObject>();
+		MainMaintenanceMainListObject object = new  MainMaintenanceMainListObject();
+		        
+		
+		object.setId("1");
+		object.setSubject(messageSourceHelper.getMessage("systema.main.maintenance.customerreg", null));
+		object.setCode("mainmaintenancecundf");
+		object.setText("VKUND / CUNDF, CUNDC, FRATXT, SYPARF, CUNDMAF,....");
+		object.setDbTable("CUNDF");
+		object.setStatus("Y");
+		object.setPgm("vkund");
+		listObject.add(object);
+		//
+		
 		return listObject;
 	}
 	
