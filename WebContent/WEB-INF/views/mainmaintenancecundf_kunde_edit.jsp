@@ -170,7 +170,7 @@
 								<td width="50%" valign="top">
 									<table>
 								<c:if test="${model.action == 'doCreate'}">
-									<c:if test="${model.invoiceCustomerAllowed == 'J'}">
+									<c:if test="${model.invoiceCustomerAllowed == 'J' || not empty user.kundeL1}">
 										<tr>
 											<td class="text14" title="kundetype">&nbsp;<font class="text14RedBold" >*</font>
 												<spring:message code="systema.main.maintenance.mainmaintenancecundf.customer.customertype"/>:
