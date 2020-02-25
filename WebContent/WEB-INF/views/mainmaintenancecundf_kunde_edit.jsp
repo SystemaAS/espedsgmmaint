@@ -393,7 +393,7 @@
 												
 												&nbsp;<spring:message code="systema.main.maintenance.mainmaintenancecundf.customer.language"/>:
 												&nbsp;<select name="spraak" id="spraak" > 
-			 					  					<option value="N"<c:if test="${model.record.spraak == ''}"> selected </c:if> ><spring:message code="systema.main.maintenance.mainmaintenancecundf.customer.language.norway"/></option>
+			 					  					<option value=""<c:if test="${model.record.spraak == ''}"> selected </c:if> ><spring:message code="systema.main.maintenance.mainmaintenancecundf.customer.language.norway"/></option>
 								  					<option value="E"<c:if test="${ model.record.spraak == 'E'}"> selected </c:if> ><spring:message code="systema.main.maintenance.mainmaintenancecundf.customer.language.england"/></option>
 								  					<option value="T"<c:if test="${ model.record.spraak == 'T'}"> selected </c:if> ><spring:message code="systema.main.maintenance.mainmaintenancecundf.customer.language.germany"/></option>
 								  				</select>
@@ -982,7 +982,7 @@
 									<c:if test="${user.kundeL1 == 'V'}">
 									<table class="formFramePeachGrayRoundBottom"  width="100%" cellspacing="0" border="0" align="center">
 										<tr> 
-											<td width="50%" >
+											<td width="70%" >
 												<table border="0">
 													<tr>
 														
@@ -1014,10 +1014,15 @@
 											  				</select>
 														</td>
 														<td class="text14" title="l1_KundGr">&nbsp;<spring:message code="systema.main.maintenance.mainmaintenancekundf.customer.l1_KundGr"/>
-															&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+															
 														</td>
 														<td>
-													    	<input type="text" class="inputTextMediumBlue" name="l1_KundGr" id="l1_KundGr" size="3" maxlength="2" value='${model.containerL1.l1_KundGr}'>
+														    	<select name="l1_KundGr" id="l1_KundGr" class="inputTextMediumBlue">
+					 					  					<c:forEach var="record" items="${model.containerL1.l1_KgrupList}" >
+										 				  		<option title="${record.kode}" value="${record.kode}"<c:if test="${model.containerL1.l1_KundGr == record.kode}"> selected </c:if> >${record.kode}&nbsp;${record.tekst}</option>
+															  </c:forEach>  
+															</select>
+														    	 
 														</td>
 													</tr>
 													<tr>
@@ -1041,13 +1046,7 @@
 											  					<option value=""<c:if test="${empty model.containerL1.l1_Kutdr }"> selected </c:if>><spring:message code="systema.no"/></option>
 											  				</select>		
 														</td>
-														<td class="text14" title="l1_Khenv">&nbsp;<spring:message code="systema.main.maintenance.mainmaintenancekundf.customer.l1_Khenv"/></td>
-														<td class="text14">
-															<input type="text" required oninvalid="this.setCustomValidity('Obligatoriskt')" onchange="setCustomValidity('')" class="inputTextMediumBlueMandatoryField" name="l1_Khenv" id="l1_Khenv" size="4" maxlength="3" value='${model.containerL1.l1_Khenv}'>
-														</td>
-													</tr>
-													
-													<tr>
+														
 														<td class="text14">&nbsp;<spring:message code="systema.main.maintenance.mainmaintenancekundf.customer.l1_Pgebyr"/></td>
 														<td>
 															<select name="l1_Pgebyr" id="l1_Pgebyr"  >
@@ -1056,32 +1055,63 @@
 											  				</select>	
 															
 														</td>
+														
+														
+													</tr>
+													
+													<tr>
+														<td class="text14" title="l1_Khenv">&nbsp;<spring:message code="systema.main.maintenance.mainmaintenancekundf.customer.l1_Khenv"/></td>
+														<td class="text14">
+															<select name="l1_Khenv" id="l1_Khenv" class="inputTextMediumBlue">
+						 					  					<c:forEach var="record" items="${model.containerL1.l1_KhenvList}" >
+											 				  		<option title="${record.kode}" value="${record.kode}"<c:if test="${model.containerL1.l1_Khenv == record.kode}"> selected </c:if> >${record.kode}&nbsp;${record.tekst}</option>
+																  </c:forEach>  
+															</select> 
+															
+														</td>
 			
 														<td class="text14">&nbsp;<spring:message code="systema.main.maintenance.mainmaintenancekundf.customer.l1_DaoAll"/></td>
 														<td class="text14">								
 														    <input type="text" readonly class="inputTextReadOnly" name="l1_DaoAar" id="l1_DaoAar" size="5" value='${model.containerL1.l1_DaoAar}'>
 														    <input type="text" readonly class="inputTextReadOnly" name="l1_DaoMnd" id="l1_DaoMnd" size="3" value='${model.containerL1.l1_DaoMnd}'>
 														    <input type="text" readonly class="inputTextReadOnly" name="l1_DaoDag" id="l1_DaoDag" size="3" value='${model.containerL1.l1_DaoDag}'>
+														    <input type="text" readonly class="inputTextReadOnly" name="l1_Ledi20" id="l1_Ledi20" size="11" value='${model.containerL1.l1_Ledi20}'>
 														</td>
+													</tr>
+													
+													<tr>
+														<td class="text14">&nbsp;<spring:message code="systema.main.maintenance.mainmaintenancekundf.customer.l1_Rkod"/></td>
+														<td>
+															<select name="l1_Rkod" id="l1_Rkod"  >
+						 					  					<option value=""<c:if test="${empty model.containerL1.l1_Rkod}"> selected </c:if>>Blank</option>
+											  					<option value="D"<c:if test="${ model.containerL1.l1_Rkod  == 'D'}"> selected </c:if>>D</option>
+											  					<option value="M"<c:if test="${ model.containerL1.l1_Rkod  == 'M'}"> selected </c:if>>M</option>
+											  				</select>	
+															
+														</td>
+				
 													</tr>
 												</table>
 											</td>
-											<td width="50%" valign="top">
+											<%--
+											<td width="40%" valign="top">
 												<table>
 													<tr>
-														<td class="text14" title="todo">&nbsp;
-															Todo:
+														<td class="text14">&nbsp;<spring:message code="systema.main.maintenance.mainmaintenancekundf.customer.l1_Rkod"/></td>
+														<td>
+															<select name="l1_Rkod" id="l1_Rkod"  >
+						 					  					<option value=""<c:if test="${empty model.containerL1.l1_Rkod}"> selected </c:if>>Blank</option>
+											  					<option value="D"<c:if test="${ model.containerL1.l1_Rkod  == 'D'}"> selected </c:if>>D</option>
+											  					<option value="M"<c:if test="${ model.containerL1.l1_Rkod  == 'M'}"> selected </c:if>>M</option>
+											  				</select>	
+															
 														</td>
-														<td><input type="text" class="inputTextMediumBlue" name="adr1L1" id="adr1L1" size="30" maxlength="30" value='${Xmodel.recordL1.todo}'></td>
-														<td class="text14" title="adr2L1">&nbsp;
-															Todo:
-														</td>
-														<td><input type="text" class="inputTextMediumBlue" name="adr2L1" id="adr2L1" size="30" maxlength="30" value='${Xmodel.recordL1.todo}'></td>
-														
+				
 													</tr>
 												</table>
 												
 											</td>
+											 --%>
 										</tr>
 									</table>
 									</c:if>

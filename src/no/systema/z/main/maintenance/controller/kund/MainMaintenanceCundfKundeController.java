@@ -327,10 +327,10 @@ public class MainMaintenanceCundfKundeController {
 				logger.info("############### - L1PARAMS:" + params);
 				JsonMaintMainKundfContainer savedL1Record = updateRecordL1(appUser, params);
 				if(savedL1Record!=null && StringUtils.hasValue(savedL1Record.getKundnr())){
-					logger.info("############### - CREATE NEW/UPDATE L1 = SUCCESS --> L1-kundnr:" + savedL1Record.getKundnr());
+					logger.warn("############### - CREATE NEW/UPDATE L1 = SUCCESS --> L1-kundnr:" + savedL1Record.getKundnr());
 					retval = savedL1Record;
 				}else{
-					logger.info("############### - ERROR SEVERE on update L1:");
+					logger.warn("############### - ERROR SEVERE on update L1:");
 				}
 			}
 		}
@@ -364,12 +364,18 @@ public class MainMaintenanceCundfKundeController {
 			recordL1.setKundgr(request.getParameter("l1_KundGr"));
 			recordL1.setFeks(request.getParameter("l1_Feks"));
 			recordL1.setPkod(request.getParameter("l1_Pkod"));
+			recordL1.setRkod(request.getParameter("l1_Rkod"));
 			recordL1.setPgebyr(request.getParameter("l1_Pgebyr"));
 			recordL1.setKutdr(request.getParameter("l1_Kutdr"));
 			recordL1.setKhenv(request.getParameter("l1_Khenv"));
-			recordL1.setDaoaar(request.getParameter("l1_DaoAar"));
-			recordL1.setDaomnd(request.getParameter("l1_DaoMnd"));
-			recordL1.setDaodag(request.getParameter("l1_DaoDag"));
+			String year = request.getParameter("l1_DaoAar");
+			if (year!=null && !year.startsWith("00")){
+				recordL1.setDaoaar(request.getParameter("l1_DaoAar"));
+				recordL1.setDaomnd(request.getParameter("l1_DaoMnd"));
+				recordL1.setDaodag(request.getParameter("l1_DaoDag"));
+			}
+			//samma som Likviditetskode i cundf
+			recordL1.setKverd(recordCundf.getSylikv());
 			
 		}
 		return recordL1;
@@ -398,7 +404,7 @@ public class MainMaintenanceCundfKundeController {
     	logger.warn("URL PARAMS: " + urlRequestParams);
     	String jsonPayload = this.urlCgiProxyService.getJsonContent(BASE_URL, urlRequestParams.toString());
     	//Debug --> 
-    	logger.debug(jsonDebugger.debugJsonPayloadWithLog4J(jsonPayload));
+    	logger.debug(jsonPayload);
     	logger.info(Calendar.getInstance().getTime() +  " CGI-end timestamp");
     	if(jsonPayload!=null){
     		JsonMaintMainKundfContainer container = this.maintMainCustomerL1Service.getContainer(jsonPayload);

@@ -164,7 +164,7 @@ public class MainMaintenanceCundfVkundController {
 		StringBuffer errMsg = new StringBuffer();
 		int dmlRetval = 0;
 		this.kundfManager = new KundfManager(this.urlCgiProxyService, this.maintMainCustomerL1Service);
-		
+		logger.warn("Inside method: mainmaintenancecundf_vkund_edit");
 
 		KundeSessionParams kundeSessionParams = new KundeSessionParams();
 
@@ -199,7 +199,9 @@ public class MainMaintenanceCundfVkundController {
 			} else if (MainMaintenanceConstants.ACTION_CREATE.equals(action)) { // Lage ny
 				
 				model.put("invoiceCustomerAllowed", vkundControllerUtil.getInvoiceCustomerAllowed(appUser));
-				
+				//L1 -FETCH
+				this.kundfManager.fetchL1(model, appUser, new JsonMaintMainCundfRecord());
+
 			} else if (MainMaintenanceConstants.ACTION_DELETE.equals(action)) { // Delete from list
 				dmlRetval = deleteRecord(appUser.getUser(), kundnr, firma, MainMaintenanceConstants.MODE_DELETE, errMsg);
 				session.removeAttribute(MainMaintenanceConstants.KUNDE_SESSION_PARAMS);
