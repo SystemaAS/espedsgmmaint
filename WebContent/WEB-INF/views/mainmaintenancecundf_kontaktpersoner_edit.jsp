@@ -226,7 +226,7 @@
 					               <td width="10%" class="tableCell" style="border-style: solid;border-width: 0px 1px 1px 0px;border-color:#FAEBD7;" ><font class="text14">&nbsp;${record.cmobil}&nbsp;</font></td>
 					               <td width="40%" class="tableCell" style="border-style: solid;border-width: 0px 1px 1px 0px;border-color:#FAEBD7;" ><font class="text14">&nbsp;${record.cemail}&nbsp;</font></td>
 			                       <td align="center" width="5%" class="tableCell" style="cursor:pointer; border-style: solid;border-width: 0px 1px 1px 0px;border-color:#FAEBD7;">
-			               				<a onclick="javascript:return confirm('<spring:message code="systema.delete.confirm"/>')" tabindex=-1 href="mainmaintenancecundf_kontaktpersoner_edit.do?action=doDelete&cfirma=${record.cfirma}&ccompn=${record.ccompn}&cconta=${record.cconta}&ctype=${record.ctype}">
+			               				<a onclick="javascript:return confirm('<spring:message code="systema.delete.confirm"/>')" tabindex=-1 href="mainmaintenancecundf_kontaktpersoner_edit.do?action=doDelete&cfirma=${record.cfirma}&ccompn=${record.ccompn}&cconta=${record.cconta}&ctype=${record.ctype}&rownum=${record.rownum}">
 						               		<img valign="bottom" src="resources/images/delete.gif" border="0" width="15px" height="15px" alt="remove">
 						               	</a>
 					               </td>

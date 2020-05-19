@@ -188,7 +188,7 @@ public class MainMaintenanceCundfKontaktpersonerController {
     	logger.info("URL: " + jsonDebugger.getBASE_URL_NoHostName(BASE_URL));
     	logger.info("URL PARAMS: " + urlRequestParams);
     	String jsonPayload = this.urlCgiProxyService.getJsonContent(BASE_URL, urlRequestParams.toString());
-    	logger.info("jsonPayload="+jsonPayload);
+    	logger.warn("jsonPayload="+jsonPayload);
     	List<JsonMaintMainCundcRecord> list = new ArrayList();
     	if(jsonPayload!=null){
     		JsonMaintMainCundcContainer container = this.maintMainCundcService.getList(jsonPayload);
