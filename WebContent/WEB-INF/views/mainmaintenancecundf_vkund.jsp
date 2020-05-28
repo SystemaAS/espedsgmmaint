@@ -88,14 +88,14 @@
 								<tr>
 								    <th width="2%" class="tableHeaderFieldFirst" align="center" ><spring:message code="systema.edit"/></th>                                                            
 									<th width="2%" class="tableHeaderField" align="center" ><spring:message code="systema.main.maintenance.mainmaintenancecundf.customer.customernr"/></th>
-									<th class="tableHeaderField" align="center" ><spring:message code="systema.main.maintenance.mainmaintenancecundf.customer.name"/></th>
-				                    <th class="tableHeaderField" align="left" >&nbsp;<spring:message code="systema.main.maintenance.mainmaintenancecundf.customer.orgnr"/></th>
+									<th class="tableHeaderField" align="left" ><spring:message code="systema.main.maintenance.mainmaintenancecundf.customer.name"/></th>
 				                    <th class="tableHeaderField" align="left" >&nbsp;<spring:message code="systema.main.maintenance.mainmaintenancecundf.customer.address"/></th>
 				                    <th class="tableHeaderField" align="center" ><spring:message code="systema.main.maintenance.mainmaintenancecundf.customer.postnr.plain"/></th>
 				                    <th class="tableHeaderField" align="center" ><spring:message code="systema.main.maintenance.mainmaintenancecundf.customer.adr3"/></th>
+				                    <th width="2%" class="tableHeaderField" align="left" >&nbsp;<spring:message code="systema.main.maintenance.mainmaintenancecundf.customer.orgnr"/></th>
 				                    <th class="tableHeaderField" align="center" ><spring:message code="systema.main.maintenance.mainmaintenancecundf.customer.landcode"/></th>
 				                    <th class="tableHeaderField" align="center" ><spring:message code="systema.main.maintenance.mainmaintenancecundf.customer.customs"/></th>
-				                    <th class="tableHeaderField" align="center" ><spring:message code="systema.main.maintenance.mainmaintenancecundf.customer.firm"/></th>
+				                    <th width="2%" class="tableHeaderField" align="center" ><spring:message code="systema.main.maintenance.mainmaintenancecundf.customer.firm"/></th>
 <!--  
 				                    <th class="tableHeaderField" align="center" ><spring:message code="systema.delete"/></th>
 -->				                    
@@ -111,14 +111,14 @@
 				               		</a>
 				               </td>
 				               <td width="2%" class="tableCell" style="border-style: solid;border-width: 0px 1px 1px 0px;border-color:#FAEBD7;" align="center">${record.kundnr}</td>
-				               <td width="2%" class="tableCell" style="border-style: solid;border-width: 0px 1px 1px 0px;border-color:#FAEBD7;" align="center">${record.knavn}</td>
-				               <td width="20%" class="tableCell" style="border-style: solid;border-width: 0px 1px 1px 1px;border-color:#FAEBD7;">&nbsp;${record.syrg}&nbsp;</td>
+				               <td width="2%" class="tableCell" style="border-style: solid;border-width: 0px 1px 1px 0px;border-color:#FAEBD7;" align="left">${record.knavn}</td>
 				               <td class="tableCell" style="border-style: solid;border-width: 0px 1px 1px 0px;border-color:#FAEBD7;" >&nbsp;${record.adr1}&nbsp;</td>
 		                       <td class="tableCell" style="border-style: solid;border-width: 0px 1px 1px 0px;border-color:#FAEBD7;" >&nbsp;${record.postnr}&nbsp;</td>
 		                       <td class="tableCell" style="border-style: solid;border-width: 0px 1px 1px 0px;border-color:#FAEBD7;" >&nbsp;${record.adr3}&nbsp;</td>
-		                       <td class="tableCell" style="border-style: solid;border-width: 0px 1px 1px 0px;border-color:#FAEBD7;" >&nbsp;${record.syland}&nbsp;</td>
+		                       <td width="2%" class="tableCell" style="border-style: solid;border-width: 0px 1px 1px 1px;border-color:#FAEBD7;">&nbsp;${record.syrg}&nbsp;</td>
+				               <td class="tableCell" style="border-style: solid;border-width: 0px 1px 1px 0px;border-color:#FAEBD7;" >&nbsp;${record.syland}&nbsp;</td>
 		                       <td class="tableCell" style="border-style: solid;border-width: 0px 1px 1px 0px;border-color:#FAEBD7;" >&nbsp;${record.syfr02}&nbsp;${record.sykont}&nbsp;</td>
-		                       <td class="tableCell" style="border-style: solid;border-width: 0px 1px 1px 0px;border-color:#FAEBD7;" >&nbsp;${record.firma}&nbsp;</td>
+		                       <td width="2%" class="tableCell" style="border-style: solid;border-width: 0px 1px 1px 0px;border-color:#FAEBD7;" >&nbsp;${record.firma}&nbsp;</td>
 <!--  
 		                       <td align="center" width="2%" class="tableCell" style="cursor:pointer; border-style: solid;border-width: 0px 1px 1px 0px;border-color:#FAEBD7;">
 		               				<a onclick="javascript:return confirm('Er du sikker på at du vil slette denne og all tilhørende informasjon?')" tabindex=-1 href="mainmaintenancecundf_vkund_edit.do?action=doDelete&kundnr=${record.kundnr}&firma=${record.firma}">

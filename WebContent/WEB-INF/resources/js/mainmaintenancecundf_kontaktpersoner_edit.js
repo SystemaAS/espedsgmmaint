@@ -222,6 +222,7 @@ function getRecord(record){
 	var ccompn = record[1];
 	var cconta = record[2];
 	var ctype = record[3];
+	var rownum = record[4];
 	    	
 	jq.ajax({
 	  type: 'GET',
@@ -230,7 +231,8 @@ function getRecord(record){
 		  	  cfirma : cfirma,
 		  	  ccompn : ccompn,
 		  	  cconta : cconta,
-		  	  ctype  : ctype },
+		  	  ctype  : ctype, 
+		  	  rownum : rownum},
 	  dataType: 'json',
 	  cache: false,
 	  contentType: 'application/json',
@@ -313,6 +315,7 @@ function getRecord(record){
 			
 			//for a future update
 			jq('#updateId').val("");jq('#updateId').val(data[i].cconta);
+			jq('#rownum').val("");jq('#rownum').val(data[i].rownum);
 			
 			//Enable Kopiere
 			jq('#copyRecordButton').attr("disabled", false);

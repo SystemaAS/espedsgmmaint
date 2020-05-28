@@ -98,11 +98,11 @@ public class MaintMaintenanceVkundAjaxHandlerController {
 	
 	
 	@RequestMapping(value = "getSpecificRecord_cundc.do", method = { RequestMethod.GET, RequestMethod.POST })
-	public @ResponseBody List<JsonMaintMainCundcRecord> getRecordCundc(@RequestParam String applicationUser, @RequestParam String cfirma, String ccompn, String cconta, String ctype) {
+	public @ResponseBody List<JsonMaintMainCundcRecord> getRecordCundc(@RequestParam String applicationUser, @RequestParam String cfirma, String ccompn, String cconta, String ctype, String rownum) {
 		final String METHOD = "[DEBUG] getSpecificRecord_cundc ";
-		logger.info(METHOD + " applicationUser=" + applicationUser + ", cfirma=" + cfirma + ", ccompn=" + ccompn+ ", cconta="+cconta+", ctype="+ctype);
+		logger.warn(METHOD + " applicationUser=" + applicationUser + ", cfirma=" + cfirma + ", ccompn=" + ccompn+ ", cconta="+cconta+", ctype="+ctype+", rownum="+rownum);
 
-		return (List<JsonMaintMainCundcRecord>) fetchSpecificCundc(applicationUser, cfirma, ccompn, cconta, ctype);
+		return (List<JsonMaintMainCundcRecord>) fetchSpecificCundc(applicationUser, cfirma, ccompn, cconta, ctype, rownum);
 	}
 
 	
@@ -260,7 +260,7 @@ public class MaintMaintenanceVkundAjaxHandlerController {
 		return list;
 	}
 	
-	private Collection<JsonMaintMainCundcRecord> fetchSpecificCundc(String applicationUser, String cfirma, String ccompn, String cconta, String ctype) {
+	private Collection<JsonMaintMainCundcRecord> fetchSpecificCundc(String applicationUser, String cfirma, String ccompn, String cconta, String ctype, String rownum) {
 		String BASE_URL = MaintenanceMainUrlDataStore.MAINTENANCE_MAIN_BASE_CUNDC_GET_LIST_URL;
 		StringBuilder urlRequestParams = new StringBuilder();
 		urlRequestParams.append("user=" + applicationUser);
@@ -268,6 +268,7 @@ public class MaintMaintenanceVkundAjaxHandlerController {
 		urlRequestParams.append("&ccompn=" + ccompn);
 		urlRequestParams.append("&cconta=" + cconta);
 		urlRequestParams.append("&ctype=" + ctype);
+		urlRequestParams.append("&rownum=" + rownum);
 		
 
 		logger.info("URL: " + BASE_URL);

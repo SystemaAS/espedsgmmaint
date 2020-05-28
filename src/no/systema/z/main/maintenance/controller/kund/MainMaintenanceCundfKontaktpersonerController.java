@@ -89,6 +89,7 @@ public class MainMaintenanceCundfKontaktpersonerController {
 		Map model = new HashMap();
 		String action = request.getParameter("action");
 		String updateId = request.getParameter("updateId");
+		String rownum = request.getParameter("rownum");
 		
 		logger.info("recordToValidate="+ReflectionToStringBuilder.toString(recordToValidate));
 		
@@ -116,6 +117,7 @@ public class MainMaintenanceCundfKontaktpersonerController {
 				if (updateId != null && !"".equals(updateId)) {
 					// meaning bounced in an Update and not a Create new
 					model.put("updateId", updateId);
+					model.put("rownum", rownum);
 				}
 				model.put(MainMaintenanceConstants.DOMAIN_RECORD, recordToValidate);
 			} else {
@@ -123,8 +125,10 @@ public class MainMaintenanceCundfKontaktpersonerController {
 				int dmlRetval = 0;
 				if (MainMaintenanceConstants.ACTION_UPDATE.equals(action)) {
 					if (updateId != null && !"".equals(updateId)) {
+						logger.warn("A");
 						dmlRetval = updateRecord(appUser, recordToValidate, MainMaintenanceConstants.MODE_UPDATE, errMsg);
 					} else {
+						logger.warn("B");
 						dmlRetval = updateRecord(appUser, recordToValidate, MainMaintenanceConstants.MODE_ADD, errMsg);
 					}
 				} else if (MainMaintenanceConstants.ACTION_DELETE.equals(action)) {
@@ -138,6 +142,8 @@ public class MainMaintenanceCundfKontaktpersonerController {
 					if (updateId != null && !"".equals(updateId)) {
 						// meaning bounced in an Update and not a Create new
 						model.put("updateId", updateId);
+					}else{
+						model.put(MainMaintenanceConstants.DOMAIN_RECORD, recordToValidate);
 					}
 					model.put(MainMaintenanceConstants.ASPECT_ERROR_MESSAGE, errMsg.toString());
 					//model.put(MainMaintenanceConstants.DOMAIN_RECORD, recordToValidate);

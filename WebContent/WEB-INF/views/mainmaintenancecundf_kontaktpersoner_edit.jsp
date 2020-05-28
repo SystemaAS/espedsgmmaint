@@ -217,7 +217,7 @@
 				             <tbody >  
 					            <c:forEach var="record" items="${model.list}" varStatus="counter">   
 					               <tr class="tableRow" height="20" >
-					               <td id="recordUpdate_${record.cfirma}_${record.ccompn}_${record.cconta}_${record.ctype}" onClick="getRecord(this);" align="center" width="5%" class="tableCellFirst" style="cursor:pointer; border-style: solid;border-width: 0px 1px 1px 0px;border-color:#FAEBD7;">
+					               <td id="recordUpdate_${record.cfirma}_${record.ccompn}_${record.cconta}_${record.ctype}_${record.rownum}" onClick="getRecord(this);" align="center" width="5%" class="tableCellFirst" style="cursor:pointer; border-style: solid;border-width: 0px 1px 1px 0px;border-color:#FAEBD7;">
 			               				<img src="resources/images/update.gif" border="0" alt="edit">
 					               </td>
 					               <td width="15%" class="tableCell" style="border-style: solid;border-width: 0px 1px 1px 1px;border-color:#FAEBD7;"><font class="text14">&nbsp;${record.cconta}&nbsp;</font></td>
@@ -246,9 +246,10 @@
  	   	 		 		<td>
 							<form action="mainmaintenancecundf_kontaktpersoner_edit.do" name="formRecord" id="formRecord" method="POST" >
 								<input type="hidden" name="applicationUser" id="applicationUser" value="${user.user}">
-								<input type="hidden" name="updateId" id="updateId" value="${model.updateId}"> 
+								<input type="hidden" name="updateId" id="updateId" value="${model.updateId}">
+								<input type="hidden" name="rownum" id="rownum" value="${model.rownum}"> 
 								<input type="hidden" name="ccontaorg" id="ccontaorg" value="${model.record.ccontaorg}"> 
-								<input type="hidden" name="ctypeorg" id="ctypeorg" value="${model.record.ctypeorg}"> 
+								<input type="hidden" name="ctypeorg" id="ctypeorg" value="${model.record.ctypeorg}">
 								<input type="hidden" name="action" id="action" value="doUpdate">
 								<table id="kontakpersonerDetails" width="100%" cellspacing="0" border="0" align="left">
 									<%-- Validation errors --%>
