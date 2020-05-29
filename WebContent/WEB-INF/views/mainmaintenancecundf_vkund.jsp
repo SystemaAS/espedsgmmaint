@@ -92,8 +92,8 @@
 				                    <th class="tableHeaderField" align="left" >&nbsp;<spring:message code="systema.main.maintenance.mainmaintenancecundf.customer.address"/></th>
 				                    <th class="tableHeaderField" align="center" ><spring:message code="systema.main.maintenance.mainmaintenancecundf.customer.postnr.plain"/></th>
 				                    <th class="tableHeaderField" align="center" ><spring:message code="systema.main.maintenance.mainmaintenancecundf.customer.adr3"/></th>
-				                    <th width="2%" class="tableHeaderField" align="left" >&nbsp;<spring:message code="systema.main.maintenance.mainmaintenancecundf.customer.orgnr"/></th>
 				                    <th class="tableHeaderField" align="center" ><spring:message code="systema.main.maintenance.mainmaintenancecundf.customer.landcode"/></th>
+				                    <th width="2%" class="tableHeaderField" align="left" >&nbsp;<spring:message code="systema.main.maintenance.mainmaintenancecundf.customer.orgnr"/></th>
 				                    <th class="tableHeaderField" align="center" ><spring:message code="systema.main.maintenance.mainmaintenancecundf.customer.customs"/></th>
 				                    <th width="2%" class="tableHeaderField" align="center" ><spring:message code="systema.main.maintenance.mainmaintenancecundf.customer.firm"/></th>
 <!--  
@@ -115,9 +115,9 @@
 				               <td class="tableCell" style="border-style: solid;border-width: 0px 1px 1px 0px;border-color:#FAEBD7;" >&nbsp;${record.adr1}&nbsp;</td>
 		                       <td class="tableCell" style="border-style: solid;border-width: 0px 1px 1px 0px;border-color:#FAEBD7;" >&nbsp;${record.postnr}&nbsp;</td>
 		                       <td class="tableCell" style="border-style: solid;border-width: 0px 1px 1px 0px;border-color:#FAEBD7;" >&nbsp;${record.adr3}&nbsp;</td>
+		                       <td class="tableCell" style="border-style: solid;border-width: 0px 1px 1px 0px;border-color:#FAEBD7;" >&nbsp;${record.syland}&nbsp;</td>
 		                       <td width="2%" class="tableCell" style="border-style: solid;border-width: 0px 1px 1px 1px;border-color:#FAEBD7;">&nbsp;${record.syrg}&nbsp;</td>
-				               <td class="tableCell" style="border-style: solid;border-width: 0px 1px 1px 0px;border-color:#FAEBD7;" >&nbsp;${record.syland}&nbsp;</td>
-		                       <td class="tableCell" style="border-style: solid;border-width: 0px 1px 1px 0px;border-color:#FAEBD7;" >&nbsp;${record.syfr02}&nbsp;${record.sykont}&nbsp;</td>
+				               <td class="tableCell" style="border-style: solid;border-width: 0px 1px 1px 0px;border-color:#FAEBD7;" >&nbsp;${record.syfr02}&nbsp;${record.sykont}&nbsp;</td>
 		                       <td width="2%" class="tableCell" style="border-style: solid;border-width: 0px 1px 1px 0px;border-color:#FAEBD7;" >&nbsp;${record.firma}&nbsp;</td>
 <!--  
 		                       <td align="center" width="2%" class="tableCell" style="cursor:pointer; border-style: solid;border-width: 0px 1px 1px 0px;border-color:#FAEBD7;">
