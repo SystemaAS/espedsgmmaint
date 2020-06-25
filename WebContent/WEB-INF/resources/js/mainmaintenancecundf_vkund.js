@@ -18,6 +18,7 @@
     	  "dom": '<"top">t<"bottom"flip><"clear">',
     	  "scrollY": "500px",
     	  "scrollCollapse":  true,
+    	  "oSearch": {"sSearch": " "},
     	  "columnDefs": [{ "type": "num", "targets": 1 }],
     	  "order": [[ 1, "asc" ]],
     	  "lengthMenu": [ 75, 100],
