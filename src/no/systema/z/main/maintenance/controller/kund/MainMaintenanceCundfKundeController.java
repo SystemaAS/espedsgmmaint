@@ -116,7 +116,9 @@ public class MainMaintenanceCundfKundeController {
 					//Now update the L1 record (when applicable)
 					//===========================================
 					if(this.isValidL1(appUser, recordToValidate, KundfManager.TRANSACTION_CREATE)){
+						logger.warn("before L1Record create ...");
 						JsonMaintMainKundfContainer savedL1Record = this.updateL1(model, appUser, request, recordToValidate);
+						logger.warn("after L1Record create ...");
 						if(savedL1Record!=null){
 							recordToValidate.setKundnr(savedL1Record.getKundnr());
 							logger.info("handover to recordToValidate OK");
@@ -179,7 +181,9 @@ public class MainMaintenanceCundfKundeController {
 						//===========================================
 						//Now update the L1 record (when applicable)
 						//===========================================
+						logger.warn("before L1Record update ...");
 						this.updateL1(model, appUser, request, record);
+						logger.warn("after L1Record update ...");
 						this.kundfManager.fetchL1(model, appUser, record);
 							
 					}
