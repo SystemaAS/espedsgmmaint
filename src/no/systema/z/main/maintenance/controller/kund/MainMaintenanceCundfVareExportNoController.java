@@ -58,6 +58,7 @@ public class MainMaintenanceCundfVareExportNoController {
 	
 	@RequestMapping(value="mainmaintenancecundf_vareexp_no_edit.do", method={RequestMethod.GET, RequestMethod.POST })
 	public ModelAndView mainmaintenancecundf_vareexp_no_edit(@ModelAttribute ("record") JsonMaintSadSadlRecord recordToValidate, BindingResult bindingResult, HttpSession session, HttpServletRequest request){
+		logger.warn("Inside mainmaintenancecundf_vareexp_no_edit");
 		KundeSessionParams kundeSessionParams = (KundeSessionParams) session.getAttribute(MainMaintenanceConstants.KUNDE_SESSION_PARAMS);	
 		String knavn = kundeSessionParams.getKnavn();
 		recordToValidate.setSlknr(kundeSessionParams.getKundnr());

@@ -119,12 +119,12 @@ public class MaintSadExportSad004Controller {
 			String originalFreeText = recordToValidate.getSltxt();
 			//Move on
 			MaintSadExportSad004Validator validator = new MaintSadExportSad004Validator();
-			JsonMaintSadSadlRecord recordToValidateOrg = null; 
+			//SOBEK JsonMaintSadSadlRecord recordToValidateOrg = null; 
 			if(MainMaintenanceConstants.ACTION_DELETE.equals(action)){
 				validator.validateDelete(recordToValidate, bindingResult);
 			}else{
 				//adjust values
-				recordToValidateOrg=SerializationUtils.clone(recordToValidate); //keep due to advanced adjustments between UI and DB
+				//SOBEK recordToValidateOrg=SerializationUtils.clone(recordToValidate); //keep due to advanced adjustments between UI and DB
 				this.adjustSomeRecordValues(recordToValidate);
 				validator.validate(recordToValidate, bindingResult);
 			}
@@ -136,7 +136,8 @@ public class MaintSadExportSad004Controller {
 					//meaning bounced in an Update and not a Create new
 					model.put("updateId", updateId);
 				}
-				model.put(MainMaintenanceConstants.DOMAIN_RECORD, recordToValidateOrg);
+				//SOBEK model.put(MainMaintenanceConstants.DOMAIN_RECORD, recordToValidateOrg);
+				model.put(MainMaintenanceConstants.DOMAIN_RECORD, recordToValidate);
 				
 			}else{
 				
@@ -174,7 +175,8 @@ public class MaintSadExportSad004Controller {
 					recordToValidate.setSltxt(originalFreeText);
 					model.put(MainMaintenanceConstants.ASPECT_ERROR_MESSAGE, errMsg.toString());
 					hasError= true;
-					model.put(MainMaintenanceConstants.DOMAIN_RECORD, recordToValidateOrg);
+					//SOBEK model.put(MainMaintenanceConstants.DOMAIN_RECORD, recordToValidateOrg);
+					model.put(MainMaintenanceConstants.DOMAIN_RECORD, recordToValidate);
 				}
 				
 			}
@@ -327,8 +329,8 @@ public class MaintSadExportSad004Controller {
 		urlRequestParams = urlRequestParamsKeys + urlRequestParams;
 		
 		logger.info(Calendar.getInstance().getTime() + " CGI-start timestamp");
-    	logger.info("URL: " + jsonDebugger.getBASE_URL_NoHostName(BASE_URL));
-    	logger.info("URL PARAMS: " + urlRequestParams);
+    	logger.warn("URL: " + jsonDebugger.getBASE_URL_NoHostName(BASE_URL));
+    	logger.warn("URL PARAMS: " + urlRequestParams);
     	String jsonPayload = this.urlCgiProxyService.getJsonContent(BASE_URL, urlRequestParams);
     	
     	//extract

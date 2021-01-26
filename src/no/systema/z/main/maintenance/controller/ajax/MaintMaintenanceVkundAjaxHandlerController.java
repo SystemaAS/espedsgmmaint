@@ -38,6 +38,10 @@ import no.systema.z.main.maintenance.service.MaintMainCundcService;
 import no.systema.z.main.maintenance.service.MaintMainSadvareService;
 import no.systema.z.main.maintenance.service.MaintMainSyparfService;
 import no.systema.z.main.maintenance.url.store.MaintenanceMainUrlDataStore;
+import no.systema.external.tvinn.sad.z.maintenance.model.JsonMaintSadSadlRecord;
+import no.systema.external.tvinn.sad.z.maintenance.service.MaintSadSadlService;
+import no.systema.external.tvinn.sad.z.maintenance.url.store.TvinnSadMaintenanceUrlDataStore;
+import no.systema.external.tvinn.sad.z.maintenance.model.JsonMaintSadSadlContainer;
 
 /**
  * Vedlikehold Firmanivå Kunderegister AJAX Controller
@@ -56,6 +60,14 @@ public class MaintMaintenanceVkundAjaxHandlerController {
 
 	@Autowired
 	VkundControllerUtil vkundControllerUtil;
+	
+	@RequestMapping(value="getSpecificRecord_sad004.do", method={RequestMethod.GET, RequestMethod.POST})
+	public @ResponseBody Collection<JsonMaintSadSadlRecord> getRecordSad004
+	  	(@RequestParam String applicationUser, @RequestParam String id, @RequestParam String kundnr) {
+		List<JsonMaintSadSadlRecord> result = new ArrayList();
+	 	//get table
+    	return fetchListSad004(applicationUser, id, kundnr);
+	}	
 	
 	@RequestMapping(value = "getSpecificRecord_sviw.do", method = { RequestMethod.GET, RequestMethod.POST })
 	public @ResponseBody Collection<SviwDao> getRecordSviw(@RequestParam String applicationUser, @RequestParam String sviw_knnr, String sviw_knso) {
@@ -143,6 +155,26 @@ public class MaintMaintenanceVkundAjaxHandlerController {
 
 		return (List<JsonMaintMainCundcRecord>) fetchDefaultEmmaXmlInfo(applicationUser, firma);
 	}	
+	
+	private Collection<JsonMaintSadSadlRecord> fetchListSad004(String applicationUser, String id, String levenr){
+		String BASE_URL = TvinnSadMaintenanceUrlDataStore.TVINN_SAD_MAINTENANCE_EXPORT_BASE_SAD004R_GET_LIST_URL;
+		String urlRequestParams = "user=" + applicationUser + "&slalfa=" + id + "&slknr=" + levenr;
+		logger.info(Calendar.getInstance().getTime() + " CGI-start timestamp");
+		logger.info("URL: " + jsonDebugger.getBASE_URL_NoHostName(BASE_URL));
+		logger.info("URL PARAMS: " + urlRequestParams);
+		String jsonPayload = this.urlCgiProxyService.getJsonContent(BASE_URL, urlRequestParams);
+		// extract
+		List<JsonMaintSadSadlRecord> list = new ArrayList();
+		if (jsonPayload != null) {
+			// lists
+			JsonMaintSadSadlContainer container = this.maintSadSadlService.getList(jsonPayload);
+			if (container != null) {
+				list = (List) container.getList();
+			}
+		}
+		return list;
+
+	}
 	
 	private Collection<SviwDao> fetchSpecificSviw(String appUser, String sviw_knnr, String sviw_knso) {
 		JsonReader<JsonDtoContainer<SviwDao>> jsonReader = new JsonReader<JsonDtoContainer<SviwDao>>();
@@ -364,6 +396,10 @@ public class MaintMaintenanceVkundAjaxHandlerController {
 	public MaintMainSadvareService getMaintMainSadvareService() {
 		return this.maintMainSadvareService;
 	}	
+	
+	
+	@Autowired
+	private MaintSadSadlService maintSadSadlService;
 	
 
 }
