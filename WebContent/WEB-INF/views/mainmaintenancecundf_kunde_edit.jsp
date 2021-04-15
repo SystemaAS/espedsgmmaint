@@ -491,11 +491,18 @@
 										  				</select>
 		
 														<c:if test="${user.filand == 'NO'}">
-															<c:if test="${model.record.syfr06 == ''}">
+															<c:choose>
+															<c:when test="${model.record.syfr06 == ''}">
 																<c:if test="${model.record.elma == 'J'}">
 																	&nbsp;merk: Org.nr er registrert i ELMA.
 																</c:if>
-															</c:if>
+															</c:when>
+															<c:otherwise>
+																<c:if test="${model.record.elma != 'J'}">
+																	&nbsp;merk: Org.nr er <b>ikke</b> registrert i ELMA.
+																</c:if>
+															</c:otherwise>
+															</c:choose>
 														</c:if>
 		
 													</td>
