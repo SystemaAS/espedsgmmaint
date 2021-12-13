@@ -9,7 +9,7 @@ import java.util.ResourceBundle;
 import org.apache.log4j.BasicConfigurator;
 import org.apache.log4j.Category;
 import org.apache.log4j.Level;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.*;
 import org.apache.log4j.PropertyConfigurator;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.stereotype.Controller;
@@ -49,7 +49,7 @@ import no.systema.main.model.SystemaWebUser;
 public class GeneralTextRenderController {
 	//OBSOLETE:  static final ResourceBundle resources = AppResources.getBundle();
 	
-	private static final Logger logger = Logger.getLogger(GeneralTextRenderController.class.getName());
+	private static final Logger logger = LogManager.getLogger(GeneralTextRenderController.class.getName());
 	private PayloadContentFlusher payloadContentFlusher = new PayloadContentFlusher();
 	
 	private final String RELATIVE_LOGFILE_PATH = "logs/" + ApplicationPropertiesUtil.getProperty("log4j.logger.file");   //OBSOLETE: resources.getString("log4j.logger.file");
