@@ -6,11 +6,8 @@ import java.io.PrintWriter;
 import java.util.Enumeration;
 import java.util.ResourceBundle;
 
-import org.apache.log4j.BasicConfigurator;
-import org.apache.log4j.Category;
-import org.apache.log4j.Level;
+ 
 import org.apache.logging.log4j.*;
-import org.apache.log4j.PropertyConfigurator;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;

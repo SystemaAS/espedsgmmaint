@@ -7,8 +7,7 @@ import javax.servlet.http.HttpSession;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpServletRequest;
 
-import org.apache.log4j.Category;
-import org.apache.log4j.Level;
+ 
 import org.apache.logging.log4j.*;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
