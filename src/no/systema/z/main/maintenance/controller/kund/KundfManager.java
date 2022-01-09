@@ -8,7 +8,7 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.logging.log4j.*;
+import org.slf4j.*;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 
@@ -24,7 +24,7 @@ import no.systema.z.main.maintenance.util.MainMaintenanceConstants;
 
 @Service
 public class KundfManager {
-	private static final Logger logger = LogManager.getLogger(KundfManager.class.getName());
+	private static final Logger logger = LoggerFactory.getLogger(KundfManager.class.getName());
 	private UrlCgiProxyService urlCgiProxyService;
 	private MaintMainCustomerL1Service maintMainCustomerL1Service;
 	public final static String L1_EXISTS_VISIBLE = "V";

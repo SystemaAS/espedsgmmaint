@@ -4,7 +4,7 @@
 package no.systema.z.main.maintenance.mapper.jsonjackson;
 
 //jackson library
-import org.apache.logging.log4j.*;
+import org.slf4j.*;
 
 //application library
 import no.systema.main.mapper.jsonjackson.general.ObjectMapperAbstractGrandFather;
@@ -18,7 +18,7 @@ import no.systema.z.main.maintenance.model.jsonjackson.dbtable.JsonMaintMainKund
  * 
  */
 public class JsonCustomerL1Mapper extends ObjectMapperAbstractGrandFather {
-	private static final Logger logger = LogManager.getLogger(JsonCustomerL1Mapper.class.getName());
+	private static final Logger logger = LoggerFactory.getLogger(JsonCustomerL1Mapper.class.getName());
 	/**
 	 * 
 	 * @param utfPayload

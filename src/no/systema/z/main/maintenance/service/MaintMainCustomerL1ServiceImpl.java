@@ -6,7 +6,7 @@ package no.systema.z.main.maintenance.service;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 
-import org.apache.logging.log4j.*;
+import org.slf4j.*;
 
 import no.systema.z.main.maintenance.mapper.jsonjackson.JsonCustomerL1Mapper;
 import no.systema.z.main.maintenance.model.jsonjackson.dbtable.JsonMaintMainKundfContainer;
@@ -21,7 +21,7 @@ import no.systema.z.main.maintenance.model.jsonjackson.dbtable.JsonMaintMainKund
  * 
  */
 public class MaintMainCustomerL1ServiceImpl implements MaintMainCustomerL1Service {
-	private static final Logger logger = LogManager.getLogger(MaintMainCustomerL1ServiceImpl.class.getName());
+	private static final Logger logger = LoggerFactory.getLogger(MaintMainCustomerL1ServiceImpl.class.getName());
 	/**
 	 * 
 	 */
